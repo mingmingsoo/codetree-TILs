@@ -1,4 +1,5 @@
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -79,7 +80,7 @@ public class Main {
 
 		medusaGoBfs(sr, sc, er, ec);
 
-		if(medusaStack.isEmpty()) {
+		if (medusaStack.isEmpty()) {
 			System.out.println(-1);
 			return;
 		}
@@ -88,11 +89,11 @@ public class Main {
 
 		while (!medusaStack.isEmpty()) {
 			int[] medusa = medusaStack.pop();
-			if(medusa[0]==er && medusa[1] ==ec) {
+			if (medusa[0] == er && medusa[1] == ec) {
 				System.out.println(0);
 				break;
 			}
-			
+
 			// 출력해야할 값.
 			int junsaMoveSum = 0;
 			int junsaStopSum = 0;
@@ -101,6 +102,7 @@ public class Main {
 			int goR = medusa[0];
 			int goC = medusa[1];
 
+//			System.out.println(goR+" "+goC);
 			// 메두사가 가는 곳에 전사가 있으면 die.
 			junsaDie1(goR, goC);
 
@@ -108,17 +110,13 @@ public class Main {
 			junsaStopSum = medusaSea(goR, goC);
 
 			// 돌 안된애들 이동
-			junsaMoveSum = junsaMove1(goR, goC);
-			
-			// 돌 안된애들 두번째 이동
-			junsaMoveSum += junsaMove2(goR, goC);
-			
+			junsaMoveSum = junsaMove(goR, goC);
+
 			// 메두사 다다른 공격
 			junsaDealSum = junsaDie2(goR, goC);
-			System.out.println(junsaMoveSum+" "+junsaStopSum+" "+junsaDealSum);
+			System.out.println(junsaMoveSum + " " + junsaStopSum + " " + junsaDealSum);
 		}
 	}
-
 
 	private static int junsaDie2(int r, int c) {
 		int sum = 0;
@@ -131,62 +129,144 @@ public class Main {
 		return sum;
 	}
 
-
-	private static int junsaMove2(int goR, int goC) {
-		int sum = 0;
+	private static int junsaMove(int goR, int goC) {
+		int total = 0;
 		for (int i = 0; i < junsa.size(); i++) {
 			if (!dollJunsa[i]) {
+				// 첫번째 이동 상하좌우
 				int junsaR = junsa.get(i)[0];
 				int junsaC = junsa.get(i)[1];
-				// 돌이 아니면 이동.
-				if (goC > junsaC && !medusaSeaMap[junsaR][junsaC+1]) {
-					junsa.get(i)[1] = junsaC + 1;
-					sum++;
-				} else if (goC == junsaC) {
-					if (goR > junsaR && !medusaSeaMap[junsaR+1][junsaC]) {
-						junsa.get(i)[0] = junsaR + 1;
-						sum++;
-					}
-					else if (goR < junsaR && !medusaSeaMap[junsaR-1][junsaC]) {
-						junsa.get(i)[0] = junsaR - 1;
-						sum++;
-					}
-				} else if (goC < junsaC && !medusaSeaMap[junsaR][junsaC-1]) {
-					junsa.get(i)[1] = junsaC - 1;
-					sum++;
+				int distance = Math.abs(goR-junsaR) + Math.abs(goC-junsaC);
+				if (junsaR == goR && junsaC == goC) {
+					continue;
 				}
-			}
-		}
-		return sum;
-	}
+				
+				// 상하좌우 거리 다따지기.
+				int distanceup = distance;
+				int distancedown = distance;
+				int distanceleft = distance;
+				int distanceright = distance;
+				int distanceAfter = distance;
+				int d = 0; // 기본좌표.
+				
+				for(int k = 0; k<4; k++) {
+					int nr = junsaR+row[k];
+					int nc = junsaC+col[k];
+					if(nr>=0 && nr<N && nc>=0 && nc<N) {
+						if(medusaSeaMap[nr][nc]) {
+							continue;
+						}
+						if(k ==0) {
+							distanceup = Math.abs(goR-nr) + Math.abs(goC-nc);
+							distanceAfter = distanceup;
+						}
+						else if(k==1) {
+							distancedown = Math.abs(goR-nr) + Math.abs(goC-nc);
+							if(distancedown<distanceAfter) {
+								d = 1;
+								distanceAfter = distancedown;
+							}
+						}
+						else if(k==2) {
+							distanceleft = Math.abs(goR-nr) + Math.abs(goC-nc);
+							if(distanceleft<distanceAfter) {
+								d =2;
+								distanceAfter = distanceleft;
+							}
+						}
+						else if(k==3) {
+							distanceright = Math.abs(goR-nr) + Math.abs(goC-nc);
+							if(distanceright<distanceAfter) {
+								d =3;
+								distanceAfter = distanceright;
+							}
+						}
+					}
+				}
+				
+				int after_junsaR = junsaR + row[d];
+				int after_junsaC = junsaC + col[d];
 
 
-	private static int junsaMove1(int goR, int goC) {
-		int sum = 0;
-		for (int i = 0; i < junsa.size(); i++) {
-			if (!dollJunsa[i]) {
-				int junsaR = junsa.get(i)[0];
-				int junsaC = junsa.get(i)[1];
-				// 돌이 아니면 이동.
-				if (goR > junsaR && !medusaSeaMap[junsaR+1][junsaC]) {
-					junsa.get(i)[0] = junsaR +1;
-					sum++;
-				} else if (goR == junsaR) {
-					if (goC > junsaC && !medusaSeaMap[junsaR][junsaC+1]) {
-						junsa.get(i)[1] = junsaC + 1;
-						sum++;
-					}
-					else if (goC < junsaC && !medusaSeaMap[junsaR][junsaC-1]) {
-						junsa.get(i)[1] = junsaC - 1;
-						sum++;
-					}
-				} else if (goR < junsaR && !medusaSeaMap[junsaR-1][junsaC]) {
-					junsa.get(i)[0] = junsaR - 1;
-					sum++;
+				if(distanceAfter < distance) {
+					total++;
+					
+					junsa.get(i)[0] = after_junsaR;
+					junsa.get(i)[1] = after_junsaC;
 				}
+				else {
+					continue;
+				}
+
+				// 두번째 이동 상하좌우
+				junsaR = junsa.get(i)[0];
+				junsaC = junsa.get(i)[1];
+				distance = Math.abs(goR-junsaR) + Math.abs(goC-junsaC);
+				if (junsaR == goR && junsaC == goC) {
+					continue;
+				}
+				
+				// 상하좌우 거리 다따지기.
+				distanceup = distance;
+				distancedown = distance;
+				distanceleft = distance;
+				distanceright = distance;
+				distanceAfter = distance;
+				d = 0; // 기본좌표.
+				
+				for(int k = 0; k<4; k++) {
+					int nr = junsaR+row2[k];
+					int nc = junsaC+col2[k];
+					if(nr>=0 && nr<N && nc>=0 && nc<N) {
+						if(medusaSeaMap[nr][nc]) {
+							continue;
+						}
+						if(k ==0) {
+							distanceleft = Math.abs(goR-nr) + Math.abs(goC-nc);
+							distanceAfter = distanceleft;
+						}
+						else if(k==1) {
+							distanceright = Math.abs(goR-nr) + Math.abs(goC-nc);
+							if(distanceright<distanceAfter) {
+								d = 1;
+								distanceAfter = distanceright;
+							}
+						}
+						else if(k==2) {
+							distanceup = Math.abs(goR-nr) + Math.abs(goC-nc);
+							if(distanceup<distanceAfter) {
+								d =2;
+								distanceAfter = distanceup;
+							}
+						}
+						else if(k==3) {
+							distancedown = Math.abs(goR-nr) + Math.abs(goC-nc);
+							if(distancedown<distanceAfter) {
+								d =3;
+								distanceAfter = distancedown;
+							}
+						}
+					}
+				}
+				
+				after_junsaR = junsaR + row2[d];
+				after_junsaC = junsaC + col2[d];
+
+
+				if(distanceAfter < distance) {
+					total++;
+					
+					junsa.get(i)[0] = after_junsaR;
+					junsa.get(i)[1] = after_junsaC;
+				}
+				else {
+					continue;
+				}
+
+
 			}
 		}
-		return sum;
+		return total;
 	}
 
 	static boolean[] dollJunsa;
@@ -218,6 +298,9 @@ public class Main {
 			int jR = junsa.get(i)[0];
 			int jC = junsa.get(i)[1];
 			if (jR >= goR) {
+				continue;
+			}
+			if (!medusaSeaMapUp[jR][jC]) {
 				continue;
 			}
 			if (jC < goC) {
@@ -270,6 +353,9 @@ public class Main {
 			if (jR <= goR) {
 				continue;
 			}
+			if (!medusaSeaMapDown[jR][jC]) {
+				continue;
+			}
 			if (jC < goC) {
 				for (int ii = jR + 1; ii < N; ii++) {
 					for (int jj = jC - (ii - jR); jj <= jC; jj++) {
@@ -304,7 +390,7 @@ public class Main {
 					dollJunsa[i] = true;
 				}
 			}
-			
+
 			for (int i = 0; i < N; i++) {
 				for (int j = 0; j < N; j++) {
 					medusaSeaMap[i][j] = medusaSeaMapDown[i][j];
@@ -325,6 +411,10 @@ public class Main {
 			int jR = junsa.get(i)[0];
 			int jC = junsa.get(i)[1];
 			if (jC >= goC) {
+				continue;
+			}
+
+			if (!medusaSeaMapLeft[jR][jC]) {
 				continue;
 			}
 			if (jR < goR) {
@@ -362,8 +452,7 @@ public class Main {
 					dollJunsa[i] = true;
 				}
 			}
-			
-			
+
 			for (int i = 0; i < N; i++) {
 				for (int j = 0; j < N; j++) {
 					medusaSeaMap[i][j] = medusaSeaMapLeft[i][j];
@@ -384,6 +473,10 @@ public class Main {
 			int jR = junsa.get(i)[0];
 			int jC = junsa.get(i)[1];
 			if (jC <= goC) {
+				continue;
+			}
+
+			if (!medusaSeaMapRight[jR][jC]) {
 				continue;
 			}
 			if (jR < goR) {
@@ -421,7 +514,7 @@ public class Main {
 					dollJunsa[i] = true;
 				}
 			}
-			
+
 			for (int i = 0; i < N; i++) {
 				for (int j = 0; j < N; j++) {
 					medusaSeaMap[i][j] = medusaSeaMapRight[i][j];
@@ -458,6 +551,9 @@ public class Main {
 	static int[][] map;
 	static int[] row = { -1, 1, 0, 0 }; // 상하좌우
 	static int[] col = { 0, 0, -1, 1 };
+
+	static int[] row2 = { 0, 0, -1, 1 }; // 좌우 상하
+	static int[] col2 = { -1, 1, 0, 0 };
 
 	private static void medusaGoBfs(int sr, int sc, int er, int ec) {
 		// 메두사의 최단거리를 초기에 설정해줘야함.
