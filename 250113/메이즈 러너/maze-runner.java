@@ -1,4 +1,5 @@
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -61,9 +62,6 @@ public class Main {
 		moveTotal = 0;
 		for (int k = 0; k < K; k++) {
 //			System.out.println("-------" + k + "초------");
-			if (peopleList.isEmpty()) {
-				break;
-			}
 			move();
 
 //			System.out.println("이동 후");
@@ -72,6 +70,10 @@ public class Main {
 //			}
 
 			exit();
+			
+			if (peopleList.isEmpty()) {
+				break;
+			}
 
 //			System.out.println("탈출 후");
 //			for (int[] p : peopleList) {
@@ -155,10 +157,10 @@ public class Main {
 			con1 : for (int i = 0; i < N; i++) {
 				 for (int j = 0; j < N; j++) {
 					// i, j 좌표의 모든 사각형 파악.
-					if(k+j >=N)
-						continue con1;
-					if(k+i >=N)
-						continue con2;
+//					if(k+j >=N)
+//						continue con1;
+//					if(k+i >=N)
+//						continue con2;
 					if (isOk(i, j, k)) {
 						squareR = i;
 						squareC = j;
