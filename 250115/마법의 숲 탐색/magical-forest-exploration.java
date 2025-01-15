@@ -162,6 +162,7 @@ public class Main {
 			c--;
 //			System.out.println("왼쪽으로 회전");
 //			print(map);
+			goDown(idx);
 		}
 		while (true) {
 //			System.out.println("r: " + r + " N: " + N);
@@ -189,6 +190,7 @@ public class Main {
 //			System.out.println("오른쪽으로 회전");
 //			System.out.println("r: " + r + " c: " + c);
 //			print(map);
+			goDown(idx);		
 		}
 
 	}
