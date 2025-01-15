@@ -1,4 +1,4 @@
-package d_codeTree.마법의숲탐색;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
