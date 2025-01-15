@@ -68,7 +68,7 @@ public class Main {
 //			System.out.println(r + " " + c);
 //			System.out.println("회전 시작!!");
 			isRotation(i + 1);
-			if (r <= 2) {
+			if (r <= 3) {
 				map = new int[N][M];
 //				System.out.println("도달못함2");
 				okpass = new boolean[N][M];
