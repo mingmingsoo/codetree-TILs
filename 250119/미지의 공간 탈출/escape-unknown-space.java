@@ -1,4 +1,3 @@
-package d_codeTree.미지의공간탈출;
 
 import java.io.BufferedReader;
 import java.io.IOException;
