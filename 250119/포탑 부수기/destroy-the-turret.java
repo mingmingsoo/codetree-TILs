@@ -1,5 +1,4 @@
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,38 +12,22 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 /**
- * 문제 시작 12:30
- * - 문제 설명
- * 1. N*M 행렬 : 0인 값은 부서진 포탄
- * 2. 4가지 액션을 수행하며 K번 반복. 만약 0인 아닌 값이 1개가 된다면 중지 
- * 	-> 가장 큰 값 출력
+ * 문제 시작 12:30 - 문제 설명 1. N*M 행렬 : 0인 값은 부서진 포탄 2. 4가지 액션을 수행하며 K번 반복. 만약 0인 아닌
+ * 값이 1개가 된다면 중지 -> 가장 큰 값 출력
  * 
- * - 필요한 메서드
- * 1. 공격자 선정 select
- * 		0이 아닌 가장 작은 값 선정 (값+N+M 공격력 증가)
- * 		가장 최근에 공격한 포탑이 가장 약한 포탑 - 이걸 표시해주는 행렬 필요(lastestMap)
- * 		2개 이상이면, 1. 행과 열이 가장 큰 포탑, 2. 열 값이 큰 포탑. 
- * 2. 공격자 공격 attack
- * 		자신을 제외한 가장 강한 포탑 공격
- * 		값이 가장 크고, 1. 공격한지 가장 오래된 포탑, 2. 행/열 값이 가장 작은 포탑, 3. 열이 가장 작은 포탑
- * 2-1. 공격자 공격(레이저) laserAttack(bfs)
- * 		ㄱ. 상하좌우 이동 가능
- * 		ㄴ. 0인 자리는 못지나감.
- * 		ㄷ. 이동할 때 반대편으로 이동 가능 = 행과 열을 넘어서,
- * 		ㄹ. 최단경로로 공격. 만약 없으면 bombAttack
- * 		ㅁ. 2개 이상이면 우.하.좌.상 우선 순위
- * 		ㅂ. 공격자는 공격력 만큼 줄어들고, 레이저 경로에 있는 포탑은 공격력의 절반 만큼.
- * 2-2. 공격자 공격(폭탄) bombAttack
- * 		ㄱ. 공격 대상에 8방 포탄 날림. 주변은 절반만큼 근데 공격자는 영향받지 않는다.
- * 		ㄴ. 반대편 격자에도 영향을 미침.
- * 3. 포탑 부서짐 
- * 4. 포탑 정비 restore
- * 		공격과 무관했던 포탑은 공격력 1씩 증가. - 공격여부 나타내는 boolean 배열 필요(attackedMap)
+ * - 필요한 메서드 1. 공격자 선정 select 0이 아닌 가장 작은 값 선정 (값+N+M 공격력 증가) - 모두 0이면 게임 끝. 가장
+ * 최근에 공격한 포탑이 가장 약한 포탑 - 이걸 표시해주는 행렬 필요(lastestMap) 2개 이상이면, 1. 행과 열이 가장 큰 포탑,
+ * 2. 열 값이 큰 포탑. 2. 공격자 공격 attack 자신을 제외한 가장 강한 포탑 공격 - 없으면 게임 끝. 값이 가장 크고, 1.
+ * 공격한지 가장 오래된 포탑, 2. 행/열 값이 가장 작은 포탑, 3. 열이 가장 작은 포탑 2-1. 공격자 공격(레이저)
+ * laserAttack(bfs) ㄱ. 상하좌우 이동 가능 ㄴ. 0인 자리는 못지나감. ㄷ. 이동할 때 반대편으로 이동 가능 = 행과 열을
+ * 넘어서, ㄹ. 최단경로로 공격. 만약 없으면 bombAttack ㅁ. 2개 이상이면 우.하.좌.상 우선 순위 ㅂ. 공격자는 공격력 만큼
+ * 줄어들고, 레이저 경로에 있는 포탑은 공격력의 절반 만큼. 2-2. 공격자 공격(폭탄) bombAttack ㄱ. 공격 대상에 8방 포탄
+ * 날림. 주변은 절반만큼 근데 공격자는 영향받지 않는다. ㄴ. 반대편 격자에도 영향을 미침. 3. 포탑 부서짐 4. 포탑 정비 restore
+ * 공격과 무관했던 포탑은 공격력 1씩 증가. - 공격여부 나타내는 boolean 배열 필요(attackedMap)
  * 
  * 
  * 
  */
-
 public class Main {
 
 	static class From implements Comparable<From> {
@@ -173,10 +156,13 @@ public class Main {
 
 			From fromNavy = fromPQ.poll();
 			To toNavy = toPQ.poll();
+			if (fromNavy.r == toNavy.r && fromNavy.c == toNavy.c) {
+				break;
+			}
 			fromNavy.power += (N + M);
-//			System.out.println("공격파워"+fromNavy.power);
+//			System.out.println("공격파워" + fromNavy.power);
 			map[fromNavy.r][fromNavy.c] += (N + M);
-//			System.out.println("공격파워"+map[fromNavy.r][fromNavy.c]);
+//			System.out.println("공격파워" + map[fromNavy.r][fromNavy.c]);
 			latestMap[fromNavy.r][fromNavy.c] = t;
 //			System.out.println(fromNavy + " " + toNavy);
 
@@ -201,7 +187,7 @@ public class Main {
 	static int[] colBomb = { 0, 0, 1, -1, 1, -1, 1, -1 };
 
 	private static void bombAttack(From fromNavy, To toNavy) {
-		
+
 		attackedMap[fromNavy.r][fromNavy.c] = true;
 		attackedMap[toNavy.r][toNavy.c] = true;
 		map[toNavy.r][toNavy.c] -= fromNavy.power;
@@ -252,7 +238,6 @@ public class Main {
 			int[] node = q.poll();
 			int r = node[0];
 			int c = node[1];
-//			System.out.println(r + " " + c);
 			if (r == toNavy.r && c == toNavy.c) {
 				tracePath(fromNavy.r, fromNavy.c, toNavy.r, toNavy.c, parentedR, parentedC, fromNavy.power / 2, t); // 레이저
 																													// 지나온
