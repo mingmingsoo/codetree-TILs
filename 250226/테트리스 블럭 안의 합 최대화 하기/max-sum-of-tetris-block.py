@@ -29,8 +29,8 @@ def dfs(r,c,depth,sm):
     global ans
     if depth == 4:
         ans = max(ans, sm)
-        if sm == 72:
-            print(r,c)
+        # if sm == 72:
+        #     print(r,c)
         return
 
     for k in range(4):
