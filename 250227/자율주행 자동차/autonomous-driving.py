@@ -29,7 +29,7 @@ while True:
     # 1. 현재 방향 기준으로 왼쪽 방향으로 간 적 없으면 좌회전해서 1칸 간다 -> 이게 근데 현재방향이 유지 되는건가?ㅠㅠ 아니라고 가정하고 풀자
     nr = r + row[(d + 3) % 4]
     nc = c + col[(d + 3) % 4]
-    if not visited[nr][nc] and grid[nr][nc] == 0 and 0 <= nr < n and 0 <= nc < m:
+    if not visited[nr][nc] and grid[nr][nc] == 0:
         # 이러면 갈 수 있다.
         cnt = 0
         visited[nr][nc] = True
@@ -43,7 +43,7 @@ while True:
     if cnt > 3:  # 3. 4방향 모두 전진하지 못하면 후진(방향 유지)
         nr = r - row[d]
         nc = c - col[d]
-        if 0 <= nr < n and 0 <= nc < m and grid[nr][nc] == 0:
+        if grid[nr][nc] == 0:
             visited[nr][nc] = True
             r = nr
             c = nc
