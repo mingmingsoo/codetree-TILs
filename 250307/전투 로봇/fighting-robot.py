@@ -61,9 +61,9 @@ while True:
                 heapq.heappush(target_q, (dist + 1, nr, nc))
     if not target_q:
         break
-    print(target_q)
+    # print(target_q)
     dist, target_r, target_c = heapq.heappop(target_q)
-    print((target_r,target_c),dist)
+    # print((target_r,target_c),dist)
     grid[target_r][target_c] = 0  # 먹는다
     eat += 1
     r = target_r
