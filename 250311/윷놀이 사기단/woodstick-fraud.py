@@ -13,7 +13,6 @@ score = [[2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38
          [20, 22, 24, 25, 30, 35, 40],
          [30, 28, 27, 26, 25, 30, 35, 40]]
 
-
 def perm(idx):
     global ans
     if idx == 10:
@@ -23,8 +22,6 @@ def perm(idx):
         for i in range(10):
             horse = sel[i] - 1
             dice = cube[i]
-            if end[horse]:
-                continue
             if state[horse] == (-1, -1):  # 시작도 안했으면?
                 go = True
                 for hr, hc in state:
@@ -37,17 +34,17 @@ def perm(idx):
                 else:
                     continue
             elif state[horse][0] == 0 and state[horse][1] + dice > 19:
-                end[horse] = True
-                continue
+                ans = max(ans, ele_score)
+                return
             elif state[horse][0] == 1 and state[horse][1] + dice > 7:
-                end[horse] = True
-                continue
+                ans = max(ans, ele_score)
+                return
             elif state[horse][0] == 2 and state[horse][1] + dice > 6:
-                end[horse] = True
-                continue
+                ans = max(ans, ele_score)
+                return
             elif state[horse][0] == 3 and state[horse][1] + dice > 7:
-                end[horse] = True
-                continue
+                ans = max(ans, ele_score)
+                return
             else:  # 그게 아니라면
                 go = True
                 for hr, hc in state:
@@ -92,7 +89,6 @@ def perm(idx):
     for i in range(1, 5):
         sel[idx] = i
         perm(idx + 1)
-
 
 perm(0)
 print(ans)
