@@ -3,6 +3,9 @@
     4개의 말이 있을 때 받을 수 있는 최대 점수는?
 구상
     1,2,3,4 중복순열
+반례
+5 5 5 5 5 5 5 5 5 5
+정답 130
 '''
 cube = list(map(int, input().split()))  # 짬푸할 칸.
 sel = [0] * 10
@@ -39,15 +42,19 @@ def perm(idx):
 
             if nr == 0 and nc > 19:
                 end[horse] = True
+                state[horse] = (0,-1)
                 continue
             elif nr == 1 and nc > 7:
                 end[horse] = True
+                state[horse] = (0, -1)
                 continue
             elif nr == 2 and nc > 6:
                 end[horse] = True
+                state[horse] = (0, -1)
                 continue
             elif nr == 3 and nc > 7:
                 end[horse] = True
+                state[horse] = (0, -1)
                 continue
 
             go = True
@@ -61,7 +68,6 @@ def perm(idx):
             if go:
                 state[horse] = (nr, nc)
                 ele_score += score[nr][nc]
-
         ans = max(ans, ele_score)
         return
     for i in range(1, 5):
