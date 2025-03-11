@@ -1,4 +1,24 @@
 '''
+틀린이유
+    .... 가려는 위치에 말이 있으면 말이 대기하는 건 줄 알았ㅇㅁ..............
+    .....ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+    ㅜㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+    ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+    ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+
+문제설명
+    4개의 말이 있을 때 받을 수 있는 최대 점수는?
+
+구상
+    1,2,3,4 중복순열
+
+반례
+5 5 5 5 5 5 5 5 5 5
+정답 130
+
+
+'''
+'''
 문제설명
     4개의 말이 있을 때 받을 수 있는 최대 점수는?
 구상
@@ -7,17 +27,16 @@
 5 5 5 5 5 5 5 5 5 5
 정답 130
 
-
 25 처리해주는 게 필요함.
 '''
 cube = list(map(int, input().split()))  # 짬푸할 칸.
 sel = [0] * 10
-visited = [False] * 4
 ans = 0
 score = [[2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40],
-         [10, 13, 16, 19, 25, 30, 35, 40],
-         [20, 22, 24, 25, 30, 35, 40],
-         [30, 28, 27, 26, 25, 30, 35, 40]]
+         [10, 13, 16, 19, 25],
+         [20, 22, 24, 25],
+         [30, 28, 27, 26, 25],
+         [25, 30, 35, 40]]
 
 
 def perm(idx):
@@ -25,13 +44,13 @@ def perm(idx):
     if idx == 10:
         ele_score = 0
         state = [(0, -1) for i in range(4)]
-        end = [False] * 4
         for i in range(10):
+            if (10 - i) * 40 + ele_score < ans:
+                return
             horse = sel[i] - 1
             dice = cube[i]
-            if end[horse]:
-                continue
-
+            if (state[horse][0], state[horse][1]) == (-1, -1):
+                return
             nr, nc = state[horse][0], state[horse][1] + dice
 
             if (nr, nc) == (0, 4):  # 10
@@ -40,43 +59,27 @@ def perm(idx):
                 (nr, nc) = (2, 0)
             elif (nr, nc) == (0, 14):  # 30
                 (nr, nc) = (3, 0)
-            elif (nr, nc) == (0, 19) or (nr, nc) == (1, 7) or (nr, nc) == (2, 6):  # 40
+            elif (nr, nc) == (0, 19):  # 40
                 (nr, nc) = (3, 7)
-            elif (nr, nc) == (1, 4) or (nr, nc) == (2, 3):  # 25
-                (nr, nc) = (3, 4)
-            elif (nr, nc) == (1, 5) or (nr, nc) == (2, 4):  # 30
-                (nr, nc) = (3, 5)
-            elif (nr, nc) == (1, 6) or (nr, nc) == (2, 5):  # 35
-                (nr, nc) = (3, 6)
+            if 0 < nr < 4 and nc >= len(score[nr]) - 1:
+                nc = nc - len(score[nr]) + 1
+                nr = 4
 
             if nr == 0 and nc > 19:
-                end[horse] = True
-                state[horse] = (0, -1)
+                state[horse] = (-1, -1)
                 continue
-            elif nr == 1 and nc > 7:
-                end[horse] = True
-                state[horse] = (0, -1)
-                continue
-            elif nr == 2 and nc > 6:
-                end[horse] = True
-                state[horse] = (0, -1)
-                continue
-            elif nr == 3 and nc > 7:
-                end[horse] = True
-                state[horse] = (0, -1)
+            elif nr == 4 and nc > 3:
+                state[horse] = (-1, -1)
                 continue
 
-            go = True
             for j in range(4):
                 if j == horse:
                     continue
                 hr, hc = state[j]
                 if (hr, hc) == (nr, nc):
-                    go = False
-                    break
-            if go:
-                state[horse] = (nr, nc)
-                ele_score += score[nr][nc]
+                    return
+            state[horse] = (nr, nc)
+            ele_score += score[nr][nc]
         ans = max(ans, ele_score)
         return
     for i in range(1, 5):
