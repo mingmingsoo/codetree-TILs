@@ -6,6 +6,9 @@
 반례
 5 5 5 5 5 5 5 5 5 5
 정답 130
+
+
+25 처리해주는 게 필요함.
 '''
 cube = list(map(int, input().split()))  # 짬푸할 칸.
 sel = [0] * 10
@@ -39,6 +42,8 @@ def perm(idx):
                 (nr, nc) = (3, 0)
             elif (nr, nc) == (0, 19) or (nr, nc) == (1, 7) or (nr, nc) == (2, 6):  # 40
                 (nr, nc) = (3, 7)
+            elif (nr, nc) == (1, 4) or (nr, nc) == (2, 3):  # 25
+                (nr, nc) = (3, 4)
 
             if nr == 0 and nc > 19:
                 end[horse] = True
