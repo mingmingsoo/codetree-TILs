@@ -55,6 +55,7 @@ def perm(idx):
                         go = False
                         break
                 if go:
+                    origin_r, origin_c = (state[horse][0], state[horse][1])
                     state[horse] = (state[horse][0], state[horse][1] + dice)  # 옮겨준다.
                     if (state[horse][0], state[horse][1]) == (0, 4):  # 10
                         state[horse] = (1, 0)  # 위치 바꿔줌
@@ -72,6 +73,7 @@ def perm(idx):
                         hr, hc = state[i]
                         if (hr, hc) == (state[horse][0], state[horse][1]):
                             go = False
+                            state[horse]= ( origin_r, origin_c)
                             break
                     if go:
                         ele_score += score[state[horse][0]][state[horse][1]]
