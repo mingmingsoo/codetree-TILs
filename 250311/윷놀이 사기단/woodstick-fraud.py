@@ -37,17 +37,21 @@ def perm(idx):
             if (nr, nc) == (0, 4):  # 10
                 (nr, nc) = (1, 0)  # 위치 바꿔줌
             elif (nr, nc) == (0, 9):  # 20
-                (nr, nc)= (2, 0)
+                (nr, nc) = (2, 0)
             elif (nr, nc) == (0, 14):  # 30
                 (nr, nc) = (3, 0)
             elif (nr, nc) == (0, 19) or (nr, nc) == (1, 7) or (nr, nc) == (2, 6):  # 40
                 (nr, nc) = (3, 7)
             elif (nr, nc) == (1, 4) or (nr, nc) == (2, 3):  # 25
                 (nr, nc) = (3, 4)
+            elif (nr, nc) == (1, 5) or (nr, nc) == (2, 4):  # 30
+                (nr, nc) = (3, 5)
+            elif (nr, nc) == (1, 6) or (nr, nc) == (2, 5):  # 35
+                (nr, nc) = (3, 6)
 
             if nr == 0 and nc > 19:
                 end[horse] = True
-                state[horse] = (0,-1)
+                state[horse] = (0, -1)
                 continue
             elif nr == 1 and nc > 7:
                 end[horse] = True
