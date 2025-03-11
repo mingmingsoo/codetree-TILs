@@ -18,83 +18,50 @@ def perm(idx):
     global ans
     if idx == 10:
         ele_score = 0
-        state = [(-1, -1) for i in range(4)]
+        state = [(0, -1) for i in range(4)]
         end = [False] * 4
         for i in range(10):
             horse = sel[i] - 1
             dice = cube[i]
             if end[horse]:
                 continue
-            if state[horse] == (-1, -1):  # 시작도 안했으면?
-                state[horse] = (0, dice - 1)
-                if (state[horse][0], state[horse][1]) == (0, 4):  # 10
-                    state[horse] = (1, 0)  # 위치 바꿔줌
-                go = True
-                
-                for i in range(4):
-                    if i == horse:
-                        continue
-                    hr, hc = state[i]
-                    if (hr, hc) == (state[horse][0], state[horse][1]):
-                        go = False
-                        state[horse] = (-1, -1)
-                        break
-                if go:
-                    state[horse] = (0, dice - 1)  # 일단 옮겨준다.
-                    ele_score += score[0][dice - 1]
-                else:
+
+            nr, nc = state[horse][0], state[horse][1] + dice
+
+            if (nr, nc) == (0, 4):  # 10
+                (nr, nc) = (1, 0)  # 위치 바꿔줌
+            elif (nr, nc) == (0, 9):  # 20
+                (nr, nc)= (2, 0)
+            elif (nr, nc) == (0, 14):  # 30
+                (nr, nc) = (3, 0)
+            elif (nr, nc) == (0, 19) or (nr, nc) == (1, 7) or (nr, nc) == (2, 6):  # 40
+                (nr, nc) = (3, 7)
+
+            if nr == 0 and nc > 19:
+                end[horse] = True
+                continue
+            elif nr == 1 and nc > 7:
+                end[horse] = True
+                continue
+            elif nr == 2 and nc > 6:
+                end[horse] = True
+                continue
+            elif nr == 3 and nc > 7:
+                end[horse] = True
+                continue
+
+            go = True
+            for j in range(4):
+                if j == horse:
                     continue
-            elif state[horse][0] == 0 and state[horse][1] + dice > 19:
-                end[horse] = True
-                continue
-            elif state[horse][0] == 1 and state[horse][1] + dice > 7:
-                end[horse] = True
-                continue
-            elif state[horse][0] == 2 and state[horse][1] + dice > 6:
-                end[horse] = True
-                continue
-            elif state[horse][0] == 3 and state[horse][1] + dice > 7:
-                end[horse] = True
-                continue
-            else:  # 그게 아니라면
-                go = True
-                for hr, hc in state:
-                    if (hr, hc) == (state[horse][0], state[horse][1] + dice):
-                        go = False
-                        break
-                if go:
-                    origin_r, origin_c = (state[horse][0], state[horse][1])
-                    state[horse] = (state[horse][0], state[horse][1] + dice)  # 옮겨준다.
-                    if (state[horse][0], state[horse][1]) == (0, 4):  # 10
-                        state[horse] = (1, 0)  # 위치 바꿔줌
-                    elif (state[horse][0], state[horse][1]) == (0, 9):  # 20
-                        state[horse] = (2, 0)
-                    elif (state[horse][0], state[horse][1]) == (0, 14):  # 30
-                        state[horse] = (3, 0)
-                    elif (state[horse][0], state[horse][1]) == (0, 19) or (state[horse][0], state[horse][1]) == (
-                    1, 7) or (state[horse][0], state[horse][1]) == (2, 6):  # 40
-                        state[horse] = (3, 7)
-                    go = True
-                    for i in range(4):
-                        if i == horse:
-                            continue
-                        hr, hc = state[i]
-                        if (hr, hc) == (state[horse][0], state[horse][1]):
-                            go = False
-                            state[horse]= ( origin_r, origin_c)
-                            break
-                    if go:
-                        ele_score += score[state[horse][0]][state[horse][1]]
-                else:
-                    continue
-            if (state[horse][0], state[horse][1]) == (0, 4):  # 10
-                state[horse] = (1, 0)  # 위치 바꿔줌
-            elif (state[horse][0], state[horse][1]) == (0, 9):  # 20
-                state[horse] = (2, 0)
-            elif (state[horse][0], state[horse][1]) == (0, 14):  # 30
-                state[horse] = (3, 0)
-            elif (state[horse][0], state[horse][1]) == (0, 19) or (state[horse][0], state[horse][1]) == (1, 7) or (state[horse][0], state[horse][1]) == (2, 6):  # 40
-                state[horse] = (3, 7)
+                hr, hc = state[j]
+                if (hr, hc) == (nr, nc):
+                    go = False
+                    break
+            if go:
+                state[horse] = (nr, nc)
+                ele_score += score[nr][nc]
+
         ans = max(ans, ele_score)
         return
     for i in range(1, 5):
@@ -104,4 +71,3 @@ def perm(idx):
 
 perm(0)
 print(ans)
-
