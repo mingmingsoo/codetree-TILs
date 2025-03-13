@@ -56,25 +56,17 @@ while jdx < m:  # 승용이 움직임
                     nr = i + row[d] * s
                     nc = j + col[d] * s
                     if d in (0, 1):
+                        size = 2 * (n - 1)
+                        nr = (nr + size) % size
                         if nr >= n:
-                            nr = nr - 2 * (n - 1)
+                            nr = size - nr
                             d = move[d]
-                        elif nr < 0:
-                            nr = abs(nr)
-                            d = move[d]
-                            if nr >= n:
-                                nr = 2*(n-1)-nr
-                                d = move[d]
                     elif d in (2, 3):
+                        size = 2 * (m - 1)
+                        nc = (nc + size) % size
                         if nc >= m:
-                            nc = nc - 2 * (m - 1)
+                            nc = size - nc
                             d = move[d]
-                        elif nc < 0:
-                            nc = abs(nc)
-                            d = move[d]
-                            if nc >= m:
-                                nc = 2*(m-1)-nc
-                                d = move[d]
                     new_grid[nr][nc].append((b, d, s))
                     # grid[i][j].pop(w)
     # 3-0. sort 하고
