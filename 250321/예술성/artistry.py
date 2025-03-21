@@ -1,4 +1,6 @@
-'''
+''''
+코드 리팩토링: 작은애들 회전 함수화
+
 문제설명
     1. 넘버링
     2. 맞닿은 변 갯수 구하기 (이게 좀 ..)
@@ -13,67 +15,29 @@
 from collections import deque
 
 
-# 회전
-# 1. 가운데 십자가 먼저
-# 1-1. 그냥 일단 반시계해
+def small_rotate(r1, r2, c1, c2, grid_copy):
+    small_grid = [_[c1:c2] for _ in grid_copy[r1:r2]]
+    small_ro_grid = [_[:] for _ in small_grid]
+    for i in range(sn):
+        for j in range(sn):
+            small_grid[i][j] = small_ro_grid[sn - j - 1][i]
+
+    for i in range(sn):
+        for j in range(sn):
+            grid[i + r1][j + c1] = small_grid[i][j]
+
+
 def rotation():
     grid_copy = [_[:] for _ in grid]  # 얘가 원본
     for i in range(n):
         for j in range(n):
             grid[i][j] = grid_copy[j][n - i - 1]
 
-    # ㅇㅋㅇㅋ 이제 짝은 애들 # 그냥 4개 할 수 바께
-    # 1사분면
-    small_grid = [_[:n // 2] for _ in grid_copy[:n // 2]]
-
-    small_ro_grid = [_[:] for _ in small_grid]
-    sn = len(small_ro_grid)
-    for i in range(sn):
-        for j in range(sn):
-            small_grid[i][j] = small_ro_grid[sn - j - 1][i]
-
-    for i in range(sn):
-        for j in range(sn):
-            grid[i][j] = small_grid[i][j]
-
-    # 2사분면
-    small_grid = [_[n // 2 + 1:] for _ in grid_copy[:n // 2]]
-
-    small_ro_grid = [_[:] for _ in small_grid]
-    sn = len(small_ro_grid)
-    for i in range(sn):
-        for j in range(sn):
-            small_grid[i][j] = small_ro_grid[sn - j - 1][i]
-
-    for i in range(sn):
-        for j in range(sn):
-            grid[i][j + n // 2 + 1] = small_grid[i][j]
-
-    # 3사분면
-    small_grid = [_[:n // 2] for _ in grid_copy[n // 2 + 1:]]
-
-    small_ro_grid = [_[:] for _ in small_grid]
-    sn = len(small_ro_grid)
-    for i in range(sn):
-        for j in range(sn):
-            small_grid[i][j] = small_ro_grid[sn - j - 1][i]
-
-    for i in range(sn):
-        for j in range(sn):
-            grid[i + n // 2 + 1][j] = small_grid[i][j]
-
-    # 4사분면
-    small_grid = [_[n // 2 + 1:] for _ in grid_copy[n // 2 + 1:]]
-
-    small_ro_grid = [_[:] for _ in small_grid]
-    sn = len(small_ro_grid)
-    for i in range(sn):
-        for j in range(sn):
-            small_grid[i][j] = small_ro_grid[sn - j - 1][i]
-
-    for i in range(sn):
-        for j in range(sn):
-            grid[i + n // 2 + 1][j + n // 2 + 1] = small_grid[i][j]
+    # 작은 애들
+    small_rotate(0, n // 2, 0, n // 2, grid_copy)
+    small_rotate(0, n // 2, n // 2 + 1, n, grid_copy)
+    small_rotate(n // 2 + 1, n, 0, n // 2, grid_copy)
+    small_rotate(n // 2 + 1, n, n // 2 + 1, n, grid_copy)
 
 
 def bfs(r, c, same_num, number):
@@ -105,11 +69,11 @@ def combi(sidx, idx):
 
 
 n = int(input())
+sn = n // 2
 grid = [list(map(int, input().split())) for i in range(n)]
 row = [-1, 0, 1, 0]
 col = [0, 1, 0, -1]
 ans = 0
-
 for i in range(4):
     numbering_map = [[0] * n for i in range(n)]  # 이게 visited 처럼 쓰일 거임
     number = 1
@@ -162,6 +126,7 @@ for i in range(4):
             tem1_num = numbering_match[team1]
             tem2_num = numbering_match[team2]
             ans += (team1_have + team2_have) * tem1_num * tem2_num * value
-
+    if i == 3:
+        break  # 여까지 왔으면 마지막 회전 안해도 된다.
     rotation()
 print(ans)
