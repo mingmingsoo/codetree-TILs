@@ -1,4 +1,6 @@
 '''
+# visited 로직도 추가하기
+
 0322 코드트리 2개의 사탕
 문제시작 19:34~ 입력받기 6분
 문제설명
@@ -60,6 +62,7 @@ def move(origin_r, origin_c, k):
 def bfs(srr, src, sbr, sbc):
     global ans
     q = deque([(srr, src, sbr, sbc, 0)])
+    visited = set([(srr, src, sbr, sbc)])
     while q:
         red_r, red_c, blue_r, blue_c, time = q.popleft()
         if time > 10:  # 게임 종료
@@ -99,7 +102,9 @@ def bfs(srr, src, sbr, sbc):
             if (red_r, red_c) == (next_red_r, next_red_c) and (blue_r, blue_c) == (next_blue_r, next_blue_c):
                 continue
             else:
-                q.append((next_red_r, next_red_c, next_blue_r, next_blue_c, time + 1))
+                if (next_red_r, next_red_c, next_blue_r, next_blue_c) not in visited:
+                    visited.add((next_red_r, next_red_c, next_blue_r, next_blue_c))
+                    q.append((next_red_r, next_red_c, next_blue_r, next_blue_c, time + 1))
 
 
 bfs(red_r, red_c, blue_r, blue_c)
