@@ -1,6 +1,8 @@
 '''
+두번쨰 merge를 합치면서 당기는 로직으로 수정
 코드트리 2048게임
 16:50 시작
+17:10 종료
 
 문제설명
     두가지 동작
@@ -56,12 +58,19 @@ def merge(game_grid):
     # 북쪽으로 합친당
     for j in range(n):
         idx = 0
-        while idx < n - 1:
-            if game_grid[idx][j] and game_grid[idx][j] == game_grid[idx + 1][j]:
-                game_grid[idx][j] *= 2
-                game_grid[idx + 1][j] = 0
+        tmp = []
+        while idx < n:
+            if idx < n - 1 and game_grid[idx][j] and game_grid[idx][j] == game_grid[idx + 1][j]:
+                tmp.append(game_grid[idx][j] * 2)
                 idx += 1
+            elif game_grid[idx][j]:
+                tmp.append(game_grid[idx][j])
             idx += 1
+        for i in range(n):
+            if i < len(tmp):
+                game_grid[i][j] = tmp[i]
+            else:
+                game_grid[i][j] = 0
 
 
 def duple_perm(idx):
@@ -76,7 +85,6 @@ def duple_perm(idx):
 
             gravity(game_grid)
             merge(game_grid)
-            gravity(game_grid)
 
         maxi = 0
         for i in range(n):
