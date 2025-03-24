@@ -39,29 +39,25 @@ def bfs(sr, sc, team_numbering):
     q = deque([(sr, sc)])
     tr, tc = -1, -1
     cnt = 0
-    pq_tmp = []
     while q:
         r, c = q.popleft()
-        pq_tmp.append([grid[r][c], abs(sr - r) + abs(sc - c), (r, c)])
         cnt += 1
-        if grid[r][c] == 3:
-            tr, tc = r, c
+        tmp.append([grid[r][c], (r, c)])
         for k in range(4):
             nr = r + row[k]
             nc = c + col[k]
             if not (0 <= nr < n and 0 <= nc < n):
                 continue
-            if 1 <= grid[nr][nc] <= 3 and not visited[nr][nc]:
+            if 1 <= grid[nr][nc] <= 2 and not visited[nr][nc]:
                 visited[nr][nc] = team_numbering
                 q.append((nr, nc))
-    team_info.append(cnt)
-    pq_tmp.sort()
-    for state, dist, (r,c) in pq_tmp:
-        tmp.append([state, (r,c)])
+            if grid[nr][nc] == 3:
+                tr, tc = nr, nc
+    team_info.append(cnt + 1)
     return tr, tc
 
 
-def bfs2(tr, tc, team_numbering):
+def bfs4(tr, tc, team_numbering):
     q = deque([(tr, tc)])
     while q:
         r, c = q.popleft()
@@ -83,18 +79,17 @@ for i in range(n):
         if grid[i][j] == 1 and not visited[i][j]:
             tmp = []
             visited[i][j] = team_numbering
-            tr, tc = bfs(i, j, team_numbering)  # 1,2,3만 담음
-            bfs2(tr, tc, team_numbering)
+            tr, tc = bfs(i, j, team_numbering)  # 1,2만 담음
+            visited[tr][tc] = team_numbering
+            tmp.append([3, (tr, tc)])
+            bfs4(tr, tc, team_numbering)  # 4 만 담음
             team_lst.append(tmp)
             team_numbering += 1
 
+# for team in team_lst:
+#     print(team)
 team_numbering -= 1
 
-# for _ in team_lst:
-#     print(_)
-# print(team_info)
-# for _ in visited:
-#     print(*_)
 for order in range(order_num):
     # pass
     # 1. 각 팀이 방향에 따라 한칸씩 이동
@@ -118,7 +113,6 @@ for order in range(order_num):
     # for _ in team_lst:
     #     print(_)
 
-    # 2. 공을 던짐
     new_grid = [[0] * n for _ in range(n)]
     for team in team_lst:
         for state, (r, c) in team:
@@ -127,6 +121,7 @@ for order in range(order_num):
     # for _ in new_grid:
     #     print(*_)
 
+    # 2. 공을 던짐
     # 3. 공맞은 팀 점수 추가
     mok = order // n
     if mok % 4 == 0:  # 가로로 탐색 0 부터
@@ -162,7 +157,7 @@ for order in range(order_num):
             if find:
                 break
     if mok % 4 == 2:  # 가로로 탐색 뒤 부터
-        idx = order % n
+        idx = n - order % n - 1
         # print("가로로 탐색 n부터", idx)
         for j in range(n - 1, -1, -1):
             find = False
@@ -195,7 +190,7 @@ for order in range(order_num):
                 break
 
     if mok % 4 == 3:  # 세로로 탐색 0 부터
-        jdx = order % n
+        jdx = n - order % n - 1
         # print("세로로 탐색 0부터", jdx)
         for i in range(n):
             find = False
