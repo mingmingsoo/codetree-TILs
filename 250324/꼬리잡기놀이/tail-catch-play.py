@@ -35,16 +35,17 @@ team_info = []  # 팀마다 몇명있는지
 ans = 0
 
 
-def bfs(sr, sc, team_numbering):  # 1과의 거리로 sort 해주면 됨.
+def bfs(sr, sc, team_numbering):
     q = deque([(sr, sc)])
     tr, tc = -1, -1
     cnt = 0
+    pq_tmp = []
     while q:
         r, c = q.popleft()
+        pq_tmp.append([grid[r][c], abs(sr - r) + abs(sc - c), (r, c)])
         cnt += 1
         if grid[r][c] == 3:
             tr, tc = r, c
-        tmp.append([grid[r][c], (r, c)])
         for k in range(4):
             nr = r + row[k]
             nc = c + col[k]
@@ -54,6 +55,9 @@ def bfs(sr, sc, team_numbering):  # 1과의 거리로 sort 해주면 됨.
                 visited[nr][nc] = team_numbering
                 q.append((nr, nc))
     team_info.append(cnt)
+    pq_tmp.sort()
+    for state, dist, (r,c) in pq_tmp:
+        tmp.append([state, (r,c)])
     return tr, tc
 
 
@@ -119,6 +123,7 @@ for order in range(order_num):
     for team in team_lst:
         for state, (r, c) in team:
             new_grid[r][c] = state
+    # print("-------이동후 ")
     # for _ in new_grid:
     #     print(*_)
 
@@ -126,7 +131,7 @@ for order in range(order_num):
     mok = order // n
     if mok % 4 == 0:  # 가로로 탐색 0 부터
         idx = order % n
-        # print("가로로 탐색 0부터 " ,idx)
+        # print("가로로 탐색 0부터 ", idx)
         for j in range(n):
             find = False
             if 1 <= new_grid[idx][j] <= 3:
@@ -136,7 +141,7 @@ for order in range(order_num):
                 team = team_lst[numbering - 1]
                 for i in range(how):
                     state, (r, c) = team[i]
-                    if (r, c) == (idx, j):
+                    if (r, c) == (idx, j) and 1 <= state <= 3:
                         ans += (i + 1) * (i + 1)
                         find = True
                         break
@@ -168,7 +173,7 @@ for order in range(order_num):
                 team = team_lst[numbering - 1]
                 for i in range(how):
                     state, (r, c) = team[i]
-                    if (r, c) == (idx, j):
+                    if (r, c) == (idx, j) and 1 <= state <= 3:
                         ans += (i + 1) * (i + 1)
                         find = True
                         break
@@ -201,7 +206,7 @@ for order in range(order_num):
                 team = team_lst[numbering - 1]
                 for w in range(how):
                     state, (r, c) = team[w]
-                    if (r, c) == (i, jdx):
+                    if (r, c) == (i, jdx) and 1 <= state <= 3:
                         ans += (w + 1) * (w + 1)
                         find = True
                         break
@@ -234,7 +239,7 @@ for order in range(order_num):
                 team = team_lst[numbering - 1]
                 for w in range(how):
                     state, (r, c) = team[w]
-                    if (r, c) == (i, jdx):
+                    if (r, c) == (i, jdx) and 1 <= state <= 3:
                         ans += (w + 1) * (w + 1)
                         find = True
                         break
@@ -261,7 +266,7 @@ for order in range(order_num):
             new_grid[r][c] = state
     # for _ in new_grid:
     #     print(*_)
-
+    # print(ans)
     grid = new_grid
 # 4. 공맞은 팀은 방향 전환
 print(ans)
