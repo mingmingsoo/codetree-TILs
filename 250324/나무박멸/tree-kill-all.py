@@ -52,14 +52,6 @@
 -1 0 0 0 0
 '''
 
-n, total_time, dist, spray = map(int, input().split())
-grid = [list(map(int, input().split())) for i in range(n)]
-ans = 0
-kill_grid = [[0] * n for i in range(n)]
-
-row = [-1, 1, 0, 0]
-col = [0, 0, 1, -1]
-
 
 def grow():  # 제초제 당한애들은 이미 grid가 0임
     plus_grid = [[0] * n for i in range(n)]
@@ -107,12 +99,6 @@ def spread():
             grid[i][j] += plus_grid[i][j]
 
 
-row2 = [-1, -1, 1, 1]
-col2 = [-1, 1, -1, 1]
-
-ans = 0
-
-
 def kill():
     global ans
     kill_lst = []
@@ -143,28 +129,25 @@ def kill():
             grid[r][c] = 0
 
 
+n, total_time, dist, spray = map(int, input().split())
+grid = [list(map(int, input().split())) for i in range(n)]
+ans = 0
+kill_grid = [[0] * n for i in range(n)]
+
+row = [-1, 1, 0, 0]
+col = [0, 0, 1, -1]
+
+row2 = [-1, -1, 1, 1]
+col2 = [-1, 1, -1, 1]
+
+ans = 0
 for time in range(total_time):
     grow()
-    # print("---성장---")
-    # for _ in grid:
-    #     print(_)
     spread()
-    # print("---번식---")
-    # for _ in grid:
-    #     print(_)
     kill()
-    # print("---제초제 뿌랴!---")
-    # for _ in kill_grid:
-    #     print(_)
     # 1씩 감소
     for i in range(n):
         for j in range(n):
             if kill_grid[i][j]:
                 kill_grid[i][j] -= 1
-    # print("---나무 죽은 후 ---")
-    # for _ in grid:
-    #     print(_)
-    # print("---제초제 감소---")
-    # for _ in kill_grid:
-    #     print(_)
 print(ans)
