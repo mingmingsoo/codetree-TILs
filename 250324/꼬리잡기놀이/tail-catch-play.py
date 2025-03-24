@@ -46,7 +46,10 @@ for turn in range(turn_num):
     # 이동
     for idx, team in enumerate(team_list):
         team_num = team_info[idx]
-        # 1. 머리에서 4 찾아서 team_num으로 바꿔주고 q에 맨 앞에 넣어줌
+        # 1. 꼬리는 4처리
+        tr, tc = team.pop()
+        grid[tr][tc] = 4
+        # 2. 머리에서 4 찾아서 team_num으로 바꿔주고 q에 맨 앞에 넣어줌
         hr, hc = team[0]
         for k in range(4):
             nr = hr + row[k]
@@ -56,9 +59,6 @@ for turn in range(turn_num):
                 team.insert(0, (nr, nc))
                 grid[nr][nc] = team_num
                 break
-        # 2. 꼬리는 4처리
-        tr, tc = team.pop()
-        grid[tr][tc] = 4
     # 공
     mok = turn // n
     if mok % 4 == 0:
@@ -94,3 +94,4 @@ for turn in range(turn_num):
                 team_list[team_num - 5].reverse()
                 break
 print(ans)
+
