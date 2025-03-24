@@ -1,170 +1,96 @@
 '''
-교수님 bfs 참조
+쉽게 쉽게....
+0841~
 '''
-
 from collections import deque
 
-n, team_num, order_num = map(int, input().split())
+n, team_num, turn_num = map(int, input().split())
 grid = [list(map(int, input().split())) for i in range(n)]
 
-team_lst = []
-visited = [[-1] * n for i in range(n)]
-
-numbering = 0
-team_cnt = []
-
+# 초기 설정
+team_list = []
 row = [-1, 1, 0, 0]
 col = [0, 0, 1, -1]
 
 
-def bfs(sr, sc, numbering):
+def bfs(sr, sc):
     q = deque([(sr, sc)])
-    cnt = 0
+    grid[sr][sc] = team_numbering
+    tmp = []
     while q:
         r, c = q.popleft()
-        if grid[r][c] != 4:
-            cnt += 1
-        tmp.append([grid[r][c], (r, c)])
+        tmp.append((r, c))
         for k in range(4):
             nr = r + row[k]
             nc = c + col[k]
-            if not (0 <= nr < n and 0 <= nc < n) or visited[nr][nc] != -1 or grid[nr][nc] == 0:
-                continue
+            if not (0 <= nr < n and 0 <= nc < n): continue
             if grid[nr][nc] == 2:
-                visited[nr][nc] = numbering
                 q.append((nr, nc))
-            elif grid[nr][nc] != 2 and (r, c) != (sr, sc):
-                visited[nr][nc] = numbering
+                grid[nr][nc] = team_numbering
+            elif grid[nr][nc] == 3 and (r, c) != (sr, sc):
                 q.append((nr, nc))
-    team_cnt.append(cnt)
+                grid[nr][nc] = team_numbering
+    team_list.append(tmp)
 
 
+team_info = []
+team_numbering = 5
 for i in range(n):
     for j in range(n):
-        if grid[i][j] == 1:
-            visited[i][j] = numbering
-            tmp = []
-            bfs(i, j, numbering)
-            numbering += 1
-            team_lst.append(tmp)
-
+        if grid[i][j] == 1:  # 머리면
+            bfs(i, j)
+            team_info.append(team_numbering)
+            team_numbering += 1
 ans = 0
-
-for order in range(order_num):
-
-    # 1. 이동
-    for team in team_lst:
-        team.insert(0, team.pop())
-    # 1-1. 머리/몽통/꼬리 다시 표시
-    for w in range(team_num):
-        how = team_cnt[w]
-        # 머리
-        team_lst[w][0][0] = 1
-        # 몸통
-        for l in range(1, how - 1):
-            team_lst[w][l][0] = 2
-        # 꼬리
-        team_lst[w][how - 1][0] = 3
-        # 나머지
-        for l in range(how, len(team_lst[w])):
-            team_lst[w][l][0] = 4
-
-    # 1-2. 이동한 거 토대로 맵 다시 반영
-    new_grid = [[0] * n for i in range(n)]
-    for team in team_lst:
-        for state, (r, c) in team:
-            new_grid[r][c] = state
-
-    # 2. 공굴려
-    mok = order // n
-    find = False
-    team = -1
+for turn in range(turn_num):
+    # 이동
+    for idx, team in enumerate(team_list):
+        team_num = team_info[idx]
+        # 1. 머리에서 4 찾아서 team_num으로 바꿔주고 q에 맨 앞에 넣어줌
+        hr, hc = team[0]
+        for k in range(4):
+            nr = hr + row[k]
+            nc = hc + col[k]
+            if not (0 <= nr < n and 0 <= nc < n): continue
+            if grid[nr][nc] == 4:
+                team.insert(0, (nr, nc))
+                grid[nr][nc] = team_num
+                break
+        # 2. 꼬리는 4처리
+        tr, tc = team.pop()
+        grid[tr][tc] = 4
+    # 공
+    mok = turn // n
     if mok % 4 == 0:
-        idx = order % n
-        for j in range(n):
-            if 1 <= new_grid[idx][j] <= 3:
-                team = visited[idx][j]
-                for w in range(len(team_lst[team])):
-                    num, (r, c) = team_lst[team][w]
-                    # 2-1. 점수 획득
-                    if (r, c) == (idx, j):
-                        ans += (w + 1) * (w + 1)
-                        find = True
-                        break
-            if find:
+        idx = turn % n
+        for j in range(0, n, 1):
+            if grid[idx][j] >= 5:
+                team_num = grid[idx][j]
+                ans += (team_list[team_num - 5].index((idx, j)) + 1) ** 2
+                team_list[team_num - 5].reverse()
                 break
     elif mok % 4 == 2:
-        idx = n - order % n - 1
+        idx = n - turn % n - 1
         for j in range(n - 1, -1, -1):
-            if 1 <= new_grid[idx][j] <= 3:
-                team = visited[idx][j]
-                for w in range(len(team_lst[team])):
-                    num, (r, c) = team_lst[team][w]
-                    # 2-1. 점수 획득
-                    if (r, c) == (idx, j):
-                        ans += (w + 1) * (w + 1)
-                        find = True
-                        break
-            if find:
+            if grid[idx][j] >= 5:
+                team_num = grid[idx][j]
+                ans += (team_list[team_num - 5].index((idx, j)) + 1) ** 2
+                team_list[team_num - 5].reverse()
                 break
     elif mok % 4 == 3:
-        jdx = n - order % n - 1
-        for i in range(n):
-            if 1 <= new_grid[i][jdx] <= 3:
-                team = visited[i][jdx]
-                for w in range(len(team_lst[team])):
-                    num, (r, c) = team_lst[team][w]
-                    # 2-1. 점수 획득
-                    if (r, c) == (i, jdx):
-                        ans += (w + 1) * (w + 1)
-                        find = True
-                        break
-            if find:
+        jdx = n - turn % n - 1
+        for i in range(0, n, 1):
+            if grid[i][jdx] >= 5:
+                team_num = grid[i][jdx]
+                ans += (team_list[team_num - 5].index((i, jdx)) + 1) ** 2
+                team_list[team_num - 5].reverse()
                 break
     elif mok % 4 == 1:
-        jdx = order % n
+        jdx = turn % n
         for i in range(n - 1, -1, -1):
-            if 1 <= new_grid[i][jdx] <= 3:
-                team = visited[i][jdx]
-                for w in range(len(team_lst[team])):
-                    num, (r, c) = team_lst[team][w]
-                    # 2-1. 점수 획득
-                    if (r, c) == (i, jdx):
-                        ans += (w + 1) * (w + 1)
-                        find = True
-                        break
-            if find:
+            if grid[i][jdx] >= 5:
+                team_num = grid[i][jdx]
+                ans += (team_list[team_num - 5].index((i, jdx)) + 1) ** 2
+                team_list[team_num - 5].reverse()
                 break
-
-    if find:
-        tmp = []
-        how = team_cnt[team]
-        for w in range(how - 1, -1, -1):
-            tmp.append(team_lst[team][w])
-        for w in range(len(team_lst[team]) - 1, how - 1, -1):
-            tmp.append(team_lst[team][w])
-        team_lst[team] = tmp
-
-        # 2-2. 머리/몽통/꼬리 다시 표시
-        how = team_cnt[team]
-        # 머리
-        team_lst[team][0][0] = 1
-        # 몸통
-        for l in range(1, how - 1):
-            team_lst[team][l][0] = 2
-        # 꼬리
-        team_lst[team][how - 1][0] = 3
-        # 나머지
-        for l in range(how, len(team_lst[team])):
-            team_lst[team][l][0] = 4
-
-    # 2-3. 변환한거 토대로 맵 반영
-    new_grid = [[0] * n for i in range(n)]
-    for team in team_lst:
-        for state, (r, c) in team:
-            new_grid[r][c] = state
-
-    grid = new_grid
-
-
 print(ans)
