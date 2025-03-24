@@ -125,7 +125,8 @@ for order in range(order_num):
     # 3. 공맞은 팀 점수 추가
     mok = order // n
     if mok % 4 == 0:  # 가로로 탐색 0 부터
-        idx = order % 4
+        idx = order % n
+        # print("가로로 탐색 0부터 " ,idx)
         for j in range(n):
             find = False
             if 1 <= new_grid[idx][j] <= 3:
@@ -156,7 +157,8 @@ for order in range(order_num):
             if find:
                 break
     if mok % 4 == 2:  # 가로로 탐색 뒤 부터
-        idx = order % 4
+        idx = order % n
+        # print("가로로 탐색 n부터", idx)
         for j in range(n - 1, -1, -1):
             find = False
             if 1 <= new_grid[idx][j] <= 3:
@@ -188,7 +190,8 @@ for order in range(order_num):
                 break
 
     if mok % 4 == 3:  # 세로로 탐색 0 부터
-        jdx = order % 4
+        jdx = order % n
+        # print("세로로 탐색 0부터", jdx)
         for i in range(n):
             find = False
             if 1 <= new_grid[i][jdx] <= 3:
@@ -220,7 +223,8 @@ for order in range(order_num):
                 break
 
     if mok % 4 == 1:  # 세로로 탐색 n 부터
-        jdx = order % 4
+        jdx = order % n
+        # print("세로로 탐색 n부터", jdx)
         for i in range(n - 1, -1, -1):
             find = False
             if 1 <= new_grid[i][jdx] <= 3:
