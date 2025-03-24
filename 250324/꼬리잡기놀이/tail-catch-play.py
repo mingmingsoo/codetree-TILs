@@ -113,50 +113,47 @@ for order in range(order_num):
     # 2. 공을 던짐
     # 3. 공맞은 팀 점수 추가
     mok = order // n
+    find = False
     if mok % 4 == 0:  # 가로로 탐색 0 부터
         idx = order % n
         for j in range(n):
-            find = False
             if 1 <= new_grid[idx][j] <= 3:
                 # 맞았다!
                 scoring(idx, j)
             if find:
                 break
-    if mok % 4 == 2:  # 가로로 탐색 뒤 부터
+    elif mok % 4 == 2:  # 가로로 탐색 뒤 부터
         idx = n - order % n - 1
         for j in range(n - 1, -1, -1):
-            find = False
             if 1 <= new_grid[idx][j] <= 3:
                 # 맞았다!
                 scoring(idx, j)
             if find:
                 break
-
-    if mok % 4 == 3:  # 세로로 탐색 0 부터
+    elif mok % 4 == 3:  # 세로로 탐색 0 부터
         jdx = n - order % n - 1
         for i in range(n):
-            find = False
             if 1 <= new_grid[i][jdx] <= 3:
                 # 맞았다!
                 scoring(i, jdx)
             if find:
                 break
 
-    if mok % 4 == 1:  # 세로로 탐색 n 부터
+    elif mok % 4 == 1:  # 세로로 탐색 n 부터
         jdx = order % n
         for i in range(n - 1, -1, -1):
-            find = False
             if 1 <= new_grid[i][jdx] <= 3:
                 scoring(i, jdx)
             if find:
                 break
 
     # 맞아서 위치 바뀌거 다시 반영!
-    new_grid = [[0] * n for _ in range(n)]
-    for team in team_lst:
-        for state, (r, c) in team:
-            new_grid[r][c] = state
+    if find:
+        new_grid = [[0] * n for _ in range(n)]
+        for team in team_lst:
+            for state, (r, c) in team:
+                new_grid[r][c] = state
 
-    grid = new_grid
+        grid = new_grid
 
 print(ans)
