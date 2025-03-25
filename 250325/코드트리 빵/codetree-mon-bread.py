@@ -19,7 +19,7 @@
     2. 편의점이면 편의점 벽처리
     3. 베켐갈 수 있으면 베켐가 -> 이것도 bfs 필요!!
     4. 플레이어 == 편의점이면 break
-    
+
 15 30
 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -68,7 +68,8 @@
 4 15
 
 
-
+아 바로 block 하면 안되고
+격자에 있는 모든 사람들이 이동 한 뒤에임!!!!!!!!!
 
 '''
 from collections import deque
@@ -144,6 +145,7 @@ def con_go(idx):
     return possible[0][0], possible[0][1]
 
 while True:
+    block_lst = []
     for idx, player in enumerate(player_lst):
 
         # 0. 이미 도착한 애들은 거너뛰어!
@@ -158,17 +160,18 @@ while True:
         # 2. 편의점 도착했으면 벽처리
         er, ec = player_end[idx]
         if player_lst[idx] == (er, ec):
-            block[er][ec] = 1  # 벽처리
+            block_lst.append((er,ec))
 
         # 3. 베켐 갈 수 있으면 베켐 가
         if time >= idx:
             if player == (-1, -1):
                 base_r, base_c = base_go(idx)
                 player_lst[idx] = (base_r, base_c)
-                block[base_r][base_c] = 1
+                block_lst.append((base_r, base_c))
         else:
             break
-
+    for r, c in block_lst:
+        block[r][c] =1
     time += 1
     if player_lst == player_end:
         break
