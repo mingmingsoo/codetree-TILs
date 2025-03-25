@@ -163,7 +163,7 @@ while True:
         # 3. 베켐 갈 수 있으면 베켐 가
         if time >= idx:
             if player == (-1, -1): # 근데 베켐애들은 격자밖에서 이동하는거라 벽처리 해줘야함
-                if block_lst:
+                while block_lst:
                     r,c = block_lst.pop()
                     block[r][c] = 1
                 base_r, base_c = base_go(idx)
@@ -171,7 +171,7 @@ while True:
                 block_lst.append((base_r, base_c))
         else:
             break
-    if block_lst: # 만약 베켐 갈 수 있는 애들이 없었으면 벽처리가 안돼서 턴 끝나고 한번 더
+    while block_lst: # 만약 베켐 갈 수 있는 애들이 없었으면 벽처리가 안돼서 턴 끝나고 한번 더
         r, c = block_lst.pop()
         block[r][c] = 1
     time += 1
