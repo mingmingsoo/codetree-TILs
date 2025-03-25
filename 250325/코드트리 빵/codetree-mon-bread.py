@@ -146,7 +146,7 @@ while True:
     block_lst = []
     for idx, player in enumerate(player_lst):
 
-        # 0. 이미 도착한 애들은 거너뛰어!
+        # 0. 이미 도착한 애들은 건너뛰어!
         if player == player_end[idx]:
             continue
 
@@ -162,15 +162,17 @@ while True:
 
         # 3. 베켐 갈 수 있으면 베켐 가
         if time >= idx:
-            if player == (-1, -1):
-                for r, c in block_lst:
+            if player == (-1, -1): # 근데 베켐애들은 격자밖에서 이동하는거라 벽처리 해줘야함
+                if block_lst:
+                    r,c = block_lst.pop()
                     block[r][c] = 1
                 base_r, base_c = base_go(idx)
                 player_lst[idx] = (base_r, base_c)
                 block_lst.append((base_r, base_c))
         else:
             break
-    for r, c in block_lst:
+    if block_lst: # 만약 베켐 갈 수 있는 애들이 없었으면 벽처리가 안돼서 턴 끝나고 한번 더
+        r, c = block_lst.pop()
         block[r][c] = 1
     time += 1
     if player_lst == player_end:
