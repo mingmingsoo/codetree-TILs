@@ -34,60 +34,6 @@
         battle()
 
 '''
-n, player_num, time = map(int, input().split())
-tmp = [list(map(int, input().split())) for i in range(n)]
-
-grid = [[[] for i in range(n)] for i in range(n)]
-player_grid = [[0] * n for i in range(n)]
-for p in range(player_num):
-    r, c, d, power = map(int, input().split())
-    player_grid[r - 1][c - 1] = (p, d, power, 0)
-row = [-1, 0, 1, 0]
-col = [0, 1, 0, -1]
-# for _ in player_grid:
-#     print(_)
-
-for i in range(n):
-    for j in range(n):
-        if tmp[i][j]:
-            grid[i][j].append(tmp[i][j])
-#
-# for _ in grid:
-#     print(_)
-
-ans = [0] * player_num
-
-
-def battle(win_score, win_num, win_d, win_power, win_gun, lose_num, lose_d, lose_power, lose_gun, i, j, nr, nc):
-    ans[win_num] += win_score
-
-    # 진 플레이어는 본인이 가지고 있는 총을 해당 격자에 내려놓음
-    if lose_gun:
-        grid[nr][nc].append(lose_gun)
-        lose_gun = 0
-    move = False
-    for w in range(4):
-        if not (0 <= nr + row[lose_d] < n and 0 <= nc + col[lose_d] < n) or \
-                player_grid[nr + row[lose_d]][nc + col[lose_d]]:
-            lose_d = (lose_d + 1) % 4
-        else:
-            move = True
-            break
-    if move:
-        nor = nr + row[lose_d]
-        noc = nc + col[lose_d]
-        if grid[nor][noc]:
-            lose_gun = max(grid[nor][noc])
-            grid[nor][noc].remove(lose_gun)
-        player_grid[nor][noc] = (lose_num, lose_d, lose_power, lose_gun)
-    # 이긴 플레이어는...
-    if grid[nr][nc]:
-        other_gun = max(grid[nr][nc])
-        if other_gun > win_gun:
-            grid[nr][nc].remove(other_gun)
-            grid[nr][nc].append(win_gun)  # 내 총 내려놓음
-            win_gun = other_gun
-    player_grid[nr][nc] = (win_num, win_d, win_power, win_gun)  # 나는 그 총 먹음
 
 
 def myprint():
@@ -99,6 +45,36 @@ def myprint():
             else:
                 print(".", end=" ")
         print()
+
+
+def battle(win_score, win_num, win_d, win_power, win_gun, lose_num, lose_d, lose_power, lose_gun, nr, nc):
+    ans[win_num] += win_score
+
+    # 진 플레이어는 본인이 가지고 있는 총을 해당 격자에 내려놓음
+    if lose_gun:
+        grid[nr][nc].append(lose_gun)
+        lose_gun = 0
+    for w in range(4):
+        if not (0 <= nr + row[lose_d] < n and 0 <= nc + col[lose_d] < n) or \
+                player_grid[nr + row[lose_d]][nc + col[lose_d]]:
+            lose_d = (lose_d + 1) % 4
+        else:
+            break
+    nor = nr + row[lose_d]
+    noc = nc + col[lose_d]
+    if grid[nor][noc]:
+        lose_gun = max(grid[nor][noc])
+        grid[nor][noc].remove(lose_gun)
+    player_grid[nor][noc] = (lose_num, lose_d, lose_power, lose_gun)
+
+    # 이긴 플레이어는...
+    if grid[nr][nc]:
+        other_gun = max(grid[nr][nc])
+        if other_gun > win_gun:
+            grid[nr][nc].remove(other_gun)
+            grid[nr][nc].append(win_gun)  # 내 총 내려놓음
+            win_gun = other_gun
+    player_grid[nr][nc] = (win_num, win_d, win_power, win_gun)  # 나는 그 총 먹음
 
 
 def move():
@@ -146,12 +122,28 @@ def move():
                             win_score = abs(my_power - other_power)
                             player_grid[i][j] = 0  # 나는 떠났음
                             battle(win_score, win_num, win_d, win_power, win_gun, lose_num, lose_d, lose_power,
-                                   lose_gun, i, j, nr, nc)
+                                   lose_gun, nr, nc)
                         break
             if find:
                 break
+n, player_num, time = map(int, input().split())
+tmp = [list(map(int, input().split())) for i in range(n)]
+
+grid = [[[] for i in range(n)] for i in range(n)]
+player_grid = [[0] * n for i in range(n)]
+for p in range(player_num):
+    r, c, d, power = map(int, input().split())
+    player_grid[r - 1][c - 1] = (p, d, power, 0)
+row = [-1, 0, 1, 0]
+col = [0, 1, 0, -1]
+
+for i in range(n):
+    for j in range(n):
+        if tmp[i][j]:
+            grid[i][j].append(tmp[i][j])
+
+ans = [0] * player_num
 
 for t in range(time):
     move()
-    # myprint()
 print(*ans)
