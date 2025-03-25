@@ -131,7 +131,6 @@ def con_go(idx):
     while q:
         r, c, dist, path = q.popleft()
         if (r, c) == (er, ec):
-            path.append((er,ec))
             possible = path
             break
         for k in range(4):
@@ -141,7 +140,6 @@ def con_go(idx):
                 continue
             visited[nr][nc] = True
             q.append((nr, nc, dist + 1, path[:] + [(nr, nc)]))
-
     return possible[0][0], possible[0][1]
 
 while True:
@@ -165,13 +163,15 @@ while True:
         # 3. 베켐 갈 수 있으면 베켐 가
         if time >= idx:
             if player == (-1, -1):
+                for r, c in block_lst:
+                    block[r][c] = 1
                 base_r, base_c = base_go(idx)
                 player_lst[idx] = (base_r, base_c)
                 block_lst.append((base_r, base_c))
         else:
             break
     for r, c in block_lst:
-        block[r][c] =1
+        block[r][c] = 1
     time += 1
     if player_lst == player_end:
         break
