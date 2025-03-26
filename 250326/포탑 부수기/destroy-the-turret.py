@@ -1,4 +1,6 @@
 '''
+attack 함수가 불필요해서 제거하고 restore 함수를 만들어줌
+코드 가독성을 높혀보자!
 문제 설명
     1. 공격자 선정
         우선순위
@@ -59,28 +61,18 @@ n,m 다른
 '''
 from collections import deque
 
-n, m, time = map(int, input().split())
 
-grid = [list(map(int, input().split())) for i in range(n)]
-time_grid = [[0] * m for i in range(n)]
-
-
-def who_battle():
+def who_battle():  # 공격자. 공격대상자 후보 담아주는 함수
     player_lst = []
     for i in range(n):
         for j in range(m):
             if grid[i][j]:
-                player_lst.append((grid[i][j], -time_grid[i][j], -(i + j), -j, (i, j)))
+                player_lst.append((grid[i][j], -time_grid[i][j], -(i + j), -j, (i, j)))  # 우선순위대로 넣고 좌표까쥐
     player_lst.sort()
     return player_lst
 
 
-# 우 하 좌 상         # 포탄용
-row = [0, 1, 0, -1, 1, 1, -1, -1]
-col = [1, 0, -1, 0, 1, -1, 1, -1]
-
-
-def laser_attack(start, end, power):
+def laser_attack(start, end, power):  # 레이저 공격 하는 함수
     sr, sc, er, ec = start[0], start[1], end[0], end[1]
     q = deque([(sr, sc, [(sr, sc)])])  # 경로 담고 er,ec 도달하면 걔네들 위치 다 battle_grid true해줌
     visited = [[False] * m for i in range(n)]
@@ -90,16 +82,14 @@ def laser_attack(start, end, power):
         r, c, path = q.popleft()
         if (r, c) == (er, ec):
             for x, y in path:
+                battle_grid[x][y] = True
                 if (x, y) == (er, ec):
                     grid[x][y] -= power
-                    if grid[x][y] < 0:
-                        grid[x][y] = 0
+                    if grid[x][y] < 0: grid[x][y] = 0
                 if (x, y) != (er, ec) and (x, y) != (sr, sc):
                     grid[x][y] -= power // 2
-                    if grid[x][y] < 0:
-                        grid[x][y] = 0
-                battle_grid[x][y] = True
-            return True
+                    if grid[x][y] < 0: grid[x][y] = 0
+            return True  # 레이저 가능!
         for k in range(4):
             nr = (r + row[k]) % n
             nc = (c + col[k]) % m
@@ -108,50 +98,55 @@ def laser_attack(start, end, power):
             visited[nr][nc] = True
             q.append((nr, nc, path[:] + [(nr, nc)]))
 
-    return False
+    return False  # 레이저 불가능!
 
 
-def bomb_attack(start, end, power):
+def bomb_attack(start, end, power):  # 포탄 공격 함수
     sr, sc, er, ec = start[0], start[1], end[0], end[1]
 
-    grid[er][ec] -= power
     if grid[er][ec] < 0:
         grid[er][ec] = 0
-    battle_grid[sr][sc] = True
-    battle_grid[er][ec] = True
-    for k in range(8):
+    battle_grid[sr][sc] = battle_grid[er][ec] = True
+    grid[er][ec] -= power  # 공격대상자는 공격 100 프로 받아
+    for k in range(8):  # 나머지는 절반만!
         nr = (er + row[k]) % n
         nc = (ec + col[k]) % m
-        if grid[nr][nc] == 0:
-            continue
+        if grid[nr][nc] == 0: continue
         battle_grid[nr][nc] = True
-        if (nr, nc) != (sr, sc):
+        if (nr, nc) != (sr, sc):  # 물론 공격자 빼고!
             grid[nr][nc] -= power // 2
-            if grid[nr][nc] < 0:
-                grid[nr][nc] = 0
+            if grid[nr][nc] < 0: grid[nr][nc] = 0
 
 
-def attack(start, end, power):
-    if not laser_attack(start, end, power):
-        bomb_attack(start, end, power)
+def restore(): # 배틀에 안 낀애들은 +=1 씩
+    for i in range(n):
+        for j in range(m):
+            if not battle_grid[i][j] and grid[i][j] > 0:
+                grid[i][j] += 1
 
+
+n, m, time = map(int, input().split())
+
+grid = [list(map(int, input().split())) for i in range(n)]
+time_grid = [[0] * m for _ in range(n)]
+       # 우 하 좌 상  # 포탄용
+row = [0, 1, 0, -1, 1, 1, -1, -1]
+col = [1, 0, -1, 0, 1, -1, 1, -1]
 
 for t in range(1, time + 1):
     battle_grid = [[False] * m for i in range(n)]
     player_lst = who_battle()  # 이거 한명만 남았을 때 확인해야함 none return 안하는지 확인
     if len(player_lst) < 2:  # 1명밖에 없거나 0명이면 게임 끝!! 배틀할 수가없음.
         break
-    # print(player_lst)
-    start = player_lst[0][4]
-    end = player_lst[-1][4]
+
+    start = player_lst[0][4] # 공격자
+    end = player_lst[-1][4] # 공격 대상자
     time_grid[start[0]][start[1]] = t  # 최근에 공격했다.
     grid[start[0]][start[1]] += n + m
     power = player_lst[0][0] + n + m
 
-    attack(start, end, power)
-    for i in range(n):
-        for j in range(m):
-            if not battle_grid[i][j] and grid[i][j] > 0:
-                grid[i][j] += 1
+    if not laser_attack(start, end, power):
+        bomb_attack(start, end, power)
+    restore()
 
 print(max(map(max, grid)))
