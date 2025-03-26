@@ -28,7 +28,7 @@ def btk(idx):
         sumi = 0
         visited = [False] * (n + 1)
         for start, time, pay in work:
-            if start + time - 1 > n:
+            if start + time> n:
                 continue
             ok = True
             for j in range(start, start + time):
