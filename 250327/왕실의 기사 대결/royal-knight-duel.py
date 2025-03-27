@@ -77,6 +77,7 @@ for _ in grid:
 grid.insert(0, [2] * n)
 grid.append([2] * n)
 
+
 player_lst = {}
 player_grid = [[-1] * n for i in range(n)]  # 나중에 꼭 -1로 바꾸기!!!!!!!!!!!!!!!!!
 for p in range(player_num):
@@ -122,6 +123,8 @@ def move():  # 이동 가능한지만 본다.
                     break
             if not move_possible:
                 break
+        if not move_possible:
+            break
 
 
 def minus_hp(origin_p_id):
@@ -132,12 +135,10 @@ def minus_hp(origin_p_id):
         player_lst[pid][1] += col[d]
         player_lst[pid][2] += row[d]
         player_lst[pid][3] += col[d]
-
+    move_lst.sort(reverse=True)
     # 그 다음에 데미지 처리 해줄게용 -> 뒤에서부터 해줘야되네 ㅠㅠ
-    for pid in range(len(player_lst) - 1, -1, -1):
-        if pid == origin_p_id:
-            continue
-        if pid not in move_lst:
+    for pid in move_lst:
+        if pid == origin_p_id: # 공격한애는 데미지 안먹는다!
             continue
         player = player_lst[pid]
         r, c, x, y, power, damage = player
