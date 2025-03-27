@@ -1,10 +1,14 @@
 '''
+사랑들을 1차원 리스트로 관리하려다가
+    최소 사각형 구할 때,,, 이 좌표를 가지는 사람이 있냐? 조회 연산이 필요해서 안썼다.
+    그리고 회전도 따로 해줘야해서 안했음. 3차원 배열로 하면 맵 회전시킬때 같이 시키면 되기 때문
+    
 문제 설명
     N*N
     1. 참가자 이동(동시) - new_grid 필요 3차원 배열
         (sr,sc) - (er,ec) 맨하튼 최단거리 - bfs 가 아니다
          for k in range(4) 돌면서 현재 거리보다 가까우면 바로 break 하고 이동
-        move = True면 ans 에 더해준다.
+        move = True면 ans 에 더해준다. -> len(grid[i][j]) 더해주면 됨.
 
         - 참가자는 grid 에 10부터 인덱싱을 남겨준다.
 
@@ -21,8 +25,8 @@
     출구 좌표
     좌표 -1 씩 필요
 출력
-    이동 거리 합, 출구좌표 - 벽은 -1로 하겠음
-
+    이동 거리 합, 출구좌표는 -1로 하겠음
+    
 - 필요한 변수
     grid, new_grid = 3차원 배열
     move_possible = boolean 변수 (이동할 수 있냐? True 면 답에 더해줌)
@@ -39,6 +43,7 @@
 사람이 한명이라도 있으면 사각형 생기는지 확인 필요
 
 
+참가자 0,0 이고 출구가 n-1,n-1인 경우 인덱스 에러 안나는지
 5 1 1
 0 1 0 0 0
 1 0 0 0 0
@@ -49,7 +54,7 @@
 5 5
 
 
-두 명 사람이 같은 곳 잘 있는지
+두 명의 사람이 같은 곳에 잘 있는지
 5 2 1
 0 0 0 0 0
 0 0 0 0 0
@@ -72,7 +77,7 @@ break 잘 되는지
 3 5
 3 3
 '''
-
+# ------------------- 입력 ----------------------------
 n, people_num, time = map(int, input().split())
 block = [list(map(int, input().split())) for i in range(n)]
 
@@ -94,6 +99,7 @@ row = [-1, 1, 0, 0]
 col = [0, 0, -1, 1]
 
 
+# ------------------- 함수 ----------------------------
 def move():
     global ans, grid
     new_grid = [[[] for i in range(n)] for i in range(n)]
@@ -125,14 +131,7 @@ def move():
 
 
 def rotation():
-    global er,ec
-    # er,ec 갱신 필요
-    # 2. 미로 회전
-    #     한명 이상 참가자 & 출구를 포함하는 가장 작은 정사각형임
-    #     크기는 2~N까지가 될 거다.
-    #     벽이 있었으면 내구도가 1씩 깎인다
-    #     여기서 5중 포문이 필요하긴 한데,,, 발견시 튀는거라 ㄱㅊ을 듯
-    #     people_have, exit_have = boolean 변수 (회전시 이 두개 만족해야 그 사각형으로 선택해 줄 것임)
+    global er, ec
     L, R, C = 0, 0, 0
     for length in range(2, n + 1):  # 사각형 크기
         is_length = False
@@ -158,7 +157,6 @@ def rotation():
     small_block = [_[C:C + L] for _ in block[R:R + L]]
     small_grid = [[__[:] for __ in _[C:C + L]] for _ in grid[R:R + L]]
 
-
     small_lo_block = [[0] * L for i in range(L)]
     small_lo_grid = [[[] for i in range(L)] for i in range(L)]
 
@@ -170,11 +168,11 @@ def rotation():
     for i in range(L):
         for j in range(L):
             if small_lo_block[i][j] > 0:
-                small_lo_block[i][j] -=1
+                small_lo_block[i][j] -= 1
             block[i + R][j + C] = small_lo_block[i][j]
             grid[i + R][j + C] = small_lo_grid[i][j][:]
-            if  block[i + R][j + C] == -1:
-                er,ec = i + R, j + C
+            if block[i + R][j + C] == -1:
+                er, ec = i + R, j + C
 
 
 def all_exit():
@@ -184,22 +182,12 @@ def all_exit():
     return True
 
 
+# ------------------- 메인 ----------------------------
 for t in range(time):
-    # print(t)
+
     move()
-    # print("------사람 이동 후-------")
-    # for _ in grid:
-    #     print(_)
-    # print(people_exit)
     rotation()  # er,ec 갱신 필요
-    # print("------맵 회전 후 맵-------")
-    # for _ in block:
-    #     print(_)
-    # print("------맵 회전 후 사람-------")
-    # for _ in grid:
-    #     print(_)
     if all_exit():
         break
 print(ans)
-print(er+1,ec+1)
-# print(people_exit)
+print(er + 1, ec + 1)
