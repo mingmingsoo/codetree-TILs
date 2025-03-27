@@ -17,7 +17,6 @@ grid[er][ec] = 10  # 벽이 10
 
 people_exit = 0  # int로 관리
 ans = 0
-
 row = [-1, 1, 0, 0]
 col = [0, 0, -1, 1]
 
@@ -47,7 +46,7 @@ def move():
                             new_grid[nr][nc] += grid[i][j]  # 아니면 옮겨줘!
                         break
                 if not move:
-                    new_grid[i][j] = grid[i][j]
+                    new_grid[i][j] += grid[i][j]
             elif grid[i][j] > 0:
                 new_grid[i][j] = grid[i][j]  # 벽, 탈출구도 고대로
     grid = new_grid
@@ -99,6 +98,5 @@ for t in range(time):
     rotation()  # er,ec 갱신 필요
     if people_exit == people_num:  # 다 탈출 했으면 그만~
         break
-
 print(ans)
 print(er + 1, ec + 1)
