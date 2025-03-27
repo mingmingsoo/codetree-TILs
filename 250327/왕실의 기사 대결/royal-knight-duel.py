@@ -13,8 +13,17 @@ for pid in move_lst:
     if pid == origin_p_id: # 공격한애는 데미지 안먹는다!
         continue
 
-이걸로 바꾸니까 됨
-틀린테케가 38번이여서 안봣음
+알아냈다!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+for pid in range(len(player_lst) - 1, -1, -1):
+
+player_lst 는 딕셔너린데 예를들어 길이가 10이여도
+기사 넘버가 28인 애가 들어있을 수 있음!!
+그래서 움직일때 기사 넘버가 28인 애들은 pid 에 해당이 안돼서 그런겅임!!!!
+유레카 유레카!!
+key를 pop 해주기 때문에 reverse 도 안해줘도됨!!
+
 '''
 from collections import deque
 
@@ -86,8 +95,8 @@ def minus_hp(origin_p_id):
         player_lst[pid][1] += col[d]
         player_lst[pid][2] += row[d]
         player_lst[pid][3] += col[d]
-    move_lst.sort(reverse=True)
     # 그 다음에 데미지 처리 해줄게용 -> 뒤에서부터 해줘야되네 ㅠㅠ
+    # reverse 안해줘도 된다.
     for pid in move_lst:
         if pid == origin_p_id: # 공격한애는 데미지 안먹는다!
             continue
