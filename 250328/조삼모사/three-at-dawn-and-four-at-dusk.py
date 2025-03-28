@@ -15,28 +15,14 @@ n = int(input())
 grid = [list(map(int, input().split())) for i in range(n)]
 
 sel = [0] * (n // 2)
-mok = 1
-mod = 1
-for i in range(n, n // 2, -1):
-    mok *= i
-# print(mok)
-
-for i in range(1, n // 2 + 1):
-    mod *= i
-# print(mod)
-depth = mok // mod
-depth //= 2
-# print(depth)
-cnt = 0
 ans = 100 * 10 + 1
 
 
 def combi(sidx, idx):
-    global cnt, ans
-    if cnt >= depth:
+    global ans
+    if sel[0]:
         return
     if sidx == n // 2:
-        cnt += 1
         not_sel = []
         for i in range(n):
             if i not in sel:
