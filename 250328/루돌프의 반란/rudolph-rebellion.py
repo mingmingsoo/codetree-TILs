@@ -1,4 +1,24 @@
 '''
+3 1 2 1 10
+1 1
+1 2 2
+2 3 3
+잘 밀려서 쫓겨나는지
+
+4 1 2 1 10
+1 1
+1 2 2
+2 3 3
+잘 밀려서 안 쫓겨나는지
+
+
+5 1 4 1 10
+1 1
+1 2 2
+2 3 3
+3 4 4
+4 5 5
+
 문제 설명
     1. 루돌프 이동 - 8방 우선순위 거리(^2) 주의, r 큰거 , c 큰거
     2. 산타 순차 이동 - 4방 우선순위 상우하좌
@@ -134,7 +154,7 @@ def merge(sr, sc, sd, move_lst):
     while q:
         idx = q.popleft()
         move_lst.append(idx)
-        sr, sc = santa_lst[idx][0], santa_lst[idx][0]
+        sr, sc = santa_lst[idx][0], santa_lst[idx][1]
         nsr = sr + row[sd]
         nsc = sc + col[sd]
         if 0 <= nsr < n and 0 <= nsc < n and grid[nsr][nsc]:
