@@ -1,24 +1,4 @@
 '''
-3 1 2 1 10
-1 1
-1 2 2
-2 3 3
-잘 밀려서 쫓겨나는지
-
-4 1 2 1 10
-1 1
-1 2 2
-2 3 3
-잘 밀려서 안 쫓겨나는지
-
-
-5 1 4 1 10
-1 1
-1 2 2
-2 3 3
-3 4 4
-4 5 5
-
 문제 설명
     1. 루돌프 이동 - 8방 우선순위 거리(^2) 주의, r 큰거 , c 큰거
     2. 산타 순차 이동 - 4방 우선순위 상우하좌
@@ -72,19 +52,17 @@ for s in range(santa_num):
     sr -= 1
     sc -= 1
     grid[sr][sc] = sidx
-    santa_lst[sidx] = [sr,sc,-1,-1]
-d = -1
+    santa_lst[sidx] = [sr, sc, -1]
 # print(santa_lst)
 # for _ in grid:
 #     print(_)
 row = [-1, 0, 1, 0, 1, 1, -1, -1]
 col = [0, 1, 0, -1, 1, -1, 1, -1]
-
 dirs = {0: 2, 1: 3, 2: 0, 3: 1}
 
 
 def ru_move():
-    global r, c, d
+    global r, c
     close_santa = []
     for santa in santa_lst:
         if santa == 0:
@@ -99,6 +77,7 @@ def ru_move():
 
     cur = (r - sr) ** 2 + (c - sc) ** 2
     ori_r, ori_c = r, c
+    d = -1
     for k in range(8):
         nr = ori_r + row[k]
         nc = ori_c + col[k]
@@ -110,7 +89,6 @@ def ru_move():
             r = nr
             c = nc
             d = k
-
     if grid[r][c]:  # 충돌 발생!!
         idx = grid[r][c]
         score[idx] += rup
@@ -125,25 +103,21 @@ def ru_move():
             move_lst.sort(reverse=True)
             # print("연쇄 이동할 애들:", move_lst)
             for jump_idx in move_lst:
-                jr, jc, jd, jsleep = santa_lst[jump_idx]
+                jr, jc, jsleep = santa_lst[jump_idx]
                 njr = jr + row[d]
                 njc = jc + col[d]
                 if not (0 <= njr < n and 0 <= njc < n):
                     santa_lst[jump_idx] = 0  # 쥬금
                 else:
-                    grid[jr][jc] = 0
                     grid[njr][njc] = jump_idx
                     santa_lst[jump_idx][0] = njr
                     santa_lst[jump_idx][1] = njc
-                    santa_lst[jump_idx][2] = d
-
             # 기절해!!
             santa_lst[idx][0] = nsr
             santa_lst[idx][1] = nsc
-            santa_lst[idx][2] = d
             grid[r][c] = 0
             grid[nsr][nsc] = idx
-            santa_lst[idx][3] = t  # 기절!
+            santa_lst[idx][2] = t  # 기절!
 
 
 def merge(sr, sc, sd, move_lst):
@@ -165,12 +139,13 @@ def santa_move(t):
     for idx, santa in enumerate(santa_lst):
         if santa == 0:
             continue
-        sr, sc, sd, sleep = santa
+        sr, sc, sleep = santa
         if sleep >= 0 and t - sleep <= 1:  # 기절이면 넘어가!
             continue
 
         cur = (sr - r) ** 2 + (sc - c) ** 2
         ori_sr, ori_sc = sr, sc
+        sd = -1
         for k in range(4):
             nsr = ori_sr + row[k]
             nsc = ori_sc + col[k]
@@ -184,7 +159,6 @@ def santa_move(t):
                 sd = k
         santa_lst[idx][0] = sr
         santa_lst[idx][1] = sc
-        santa_lst[idx][2] = sd
         grid[ori_sr][ori_sc] = 0
         grid[sr][sc] = idx
         if (sr, sc) == (r, c):  # 충돌 발생!!
@@ -200,24 +174,22 @@ def santa_move(t):
                 move_lst.sort(reverse=True)
                 # print("연쇄 이동할 애들:", move_lst)
                 for jump_idx in move_lst:
-                    jr, jc, jd, jsleep = santa_lst[jump_idx]
+                    jr, jc, jsleep = santa_lst[jump_idx]
                     njr = jr + row[dirs[sd]]
                     njc = jc + col[dirs[sd]]
                     if not (0 <= njr < n and 0 <= njc < n):
                         santa_lst[jump_idx] = 0  # 쥬금
-                    grid[jr][jc] = 0
-                    grid[njr][njc] = jump_idx
-                    santa_lst[jump_idx][0] = njr
-                    santa_lst[jump_idx][1] = njc
-                    santa_lst[jump_idx][2] = dirs[sd]
+                    else:
+                        grid[njr][njc] = jump_idx
+                        santa_lst[jump_idx][0] = njr
+                        santa_lst[jump_idx][1] = njc
 
                 # 기절해!!
                 santa_lst[idx][0] = nsr
                 santa_lst[idx][1] = nsc
-                santa_lst[idx][2] = dirs[sd]
                 grid[sr][sc] = 0
                 grid[nsr][nsc] = idx
-                santa_lst[idx][3] = t  # 기절!
+                santa_lst[idx][2] = t  # 기절!
 
 
 def end():
