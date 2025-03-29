@@ -41,7 +41,7 @@ def is_rotation():
             rotate_arr[i] = True
             dir_arr[i] = rd
             rd *= -1
-            light_dir = grid[i][6]
+            light_dir = grid[i][2]
         else:
             break
 
