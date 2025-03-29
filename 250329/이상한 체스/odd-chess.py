@@ -25,6 +25,7 @@ def left(r, c, visited):
             break
         visited[r][j] = 1
 
+
 def right(r, c, visited):
     for j in range(c, m):
         if grid[r][j] == 6:
@@ -34,16 +35,24 @@ def right(r, c, visited):
 
 def up(r, c, visited):
     for i in range(r, -1, -1):
-        if grid[i][c]== 6:
+        if grid[i][c] == 6:
             break
         visited[i][c] = 1
 
 
 def down(r, c, visited):
     for i in range(r, n):
-        if grid[i][c]== 6:
+        if grid[i][c] == 6:
             break
         visited[i][c] = 1
+
+
+method_dict = {1: ((left,), (right,), (up,), (down,)),
+               2: ((left, right), (up, down)),
+               3: ((up, right), (right, down), (down, left), (left, up)),
+               4: ((up, right, down), (right, down, left), (down, left, up), (left, up, right)),
+               5: ((left, right, up, down),)
+               }
 
 
 def btk(idx):
@@ -55,86 +64,10 @@ def btk(idx):
 
     r, c, shape = arr[idx]
     visited_copy = [_[:] for _ in visited]
-    if shape == 1:
-        left(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-        right(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-        up(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-        down(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-    elif shape == 2:
-        left(r, c, visited)
-        right(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-        up(r, c, visited)
-        down(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-    elif shape == 3:
-        up(r, c, visited)
-        right(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-        right(r, c, visited)
-        down(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-        down(r, c, visited)
-        left(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-        left(r, c, visited)
-        up(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-    elif shape == 4:
-        up(r, c, visited)
-        right(r, c, visited)
-        down(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-        right(r, c, visited)
-        down(r, c, visited)
-        left(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-        down(r, c, visited)
-        left(r, c, visited)
-        up(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-        left(r, c, visited)
-        up(r, c, visited)
-        right(r, c, visited)
-        btk(idx + 1)
-        visited = [_[:] for _ in visited_copy]
-
-    elif shape == 5:
-        left(r, c, visited)
-        right(r, c, visited)
-        up(r, c, visited)
-        down(r, c, visited)
-        btk(idx + 1)
+    for func in method_dict[shape]:
+        for f in func:
+            f(r, c, visited)
+            btk(idx + 1)
         visited = [_[:] for _ in visited_copy]
 
 
