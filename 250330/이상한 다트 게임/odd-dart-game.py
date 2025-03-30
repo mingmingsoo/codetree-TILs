@@ -19,20 +19,20 @@ for order in range(order_num):
     for i in range(x - 1, n, x):  # 배수만..
         grid[i].rotate(ro)
 
+
     # 인접 찾기
     is_close = False
     close = [[0] * m for i in range(n)]
     # 가로 찾자
-    for i in range(m):
+    for i in range(n):
         for j in range(-1, m - 1, 1):
-            if grid[i][j] == grid[i][j + 1]:
+            if grid[i][j] and grid[i][j] == grid[i][j + 1]:
                 close[i][j] = close[i][j + 1] = 1
                 is_close = True
-
     # 세로 찾자
     for j in range(m):
         for i in range(n - 1):
-            if grid[i][j] == grid[i + 1][j]:
+            if grid[i][j] and grid[i][j] == grid[i + 1][j]:
                 close[i][j] = close[i + 1][j] = 1
                 is_close = True
 
@@ -52,9 +52,9 @@ for order in range(order_num):
 
         for i in range(n):
             for j in range(m):
-                if grid[i][j] and grid[i][j] > sm / cnt:
+                if grid[i][j] and grid[i][j] > sm // cnt:
                     grid[i][j] -= 1
-                elif grid[i][j] and grid[i][j] < sm / cnt:
+                elif grid[i][j] and grid[i][j] < sm // cnt:
                     grid[i][j] += 1
 
 print(sum(map(sum, grid)))
