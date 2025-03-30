@@ -57,14 +57,14 @@ def cal(i, j, d1, d2):
                 break
 
     for r in range(i + d1, n):
-        for c in range(j):
+        for c in range(j - d1 + d2):
             if area[r][c] != 5:
                 area[r][c] = 3
             else:
                 break
 
     for r in range(i + d2 + 1, n):
-        for c in range(n - 1, j-1, -1):
+        for c in range(n - 1, j+d2-d1-1, -1):
             if area[r][c] != 5:
                 area[r][c] = 4
             else:
