@@ -43,11 +43,11 @@ for time in range(2000):
     for i in range(n):
         for j in range(n):
             if not visited[i][j]:
+                visited[i][j] =1
                 bfs(i, j)
 
     if not change:
         ans = time
         break
-
     grid = new_grid
 print(ans)
