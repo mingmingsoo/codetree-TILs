@@ -35,7 +35,11 @@ def sort():
     grid = new_grid
 
 
-for t in range(1, 101):  # 100초까지 가능
+for t in range(0, 101):  # 100초까지 가능
+    if len(grid) > er and len(grid[0]) > ec and grid[er][ec] == num:
+        ans = t
+        break
+
     if len(grid) >= len(grid[0]):
         sort()
 
@@ -46,8 +50,4 @@ for t in range(1, 101):  # 100초까지 가능
 
 
     grid = [_[:100] for _ in grid[:100]]
-    if len(grid) > er and len(grid[0]) > ec and grid[er][ec] == num:
-        ans = t
-        break
-
 print(ans)
