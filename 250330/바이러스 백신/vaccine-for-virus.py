@@ -34,7 +34,7 @@ def combi(sidx, idx):
             visited[r][c] = True
             q.append((r, c, 0))
 
-        maxi = -1
+        maxi = 0
         while q:
             r, c, time = q.popleft()
             if grid[r][c] == 0:
