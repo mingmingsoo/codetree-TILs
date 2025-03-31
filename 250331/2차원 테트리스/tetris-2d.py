@@ -57,7 +57,7 @@ def location():
 
 def delete(grid):
     global sc
-    for i in range(n - 1, -1, -1):
+    for i in range(n):
         if grid[i].count(1) == 4:
             sc += 1
             grid.pop(i)
@@ -77,28 +77,11 @@ def special(grid):
 for b in range(block_num):
     shape, r, c = map(int, input().split())
     location()  # 위치시키기
-    # print("----yellow----")
-    # for _ in yel:
-    #     print(_)
-    # print("----red----")
-    # for _ in red:
-    #     print(_)
     delete(yel)  # 한 줄 채워진 애들 지우기 + 점수
     delete(red)
-    # print("----yellow 한 줄 지워----")
-    # for _ in yel:
-    #     print(_)
-    # print("----red 한 줄 지워----")
-    # for _ in red:
-    #     print(_)
     special(yel)
     special(red)
-    # print("----yellow 스페샬----")
-    # for _ in yel:
-    #     print(_)
-    # print("----red 스페샬----")
-    # for _ in red:
-    #     print(_)
+
 
 print(sc)
 print(sum(map(sum, red)) + sum(map(sum, yel)))
