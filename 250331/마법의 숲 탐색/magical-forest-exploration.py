@@ -87,6 +87,7 @@ def clear():
 for p in range(player_num):
     c, d = map(int, input().split())
     c -= 1
+
     r = 0  # 맨 처음 중앙은 격자밖
     while True:
         change = False
@@ -104,12 +105,12 @@ for p in range(player_num):
         # 위 r-1,c   ->r-1,c+1
         # 오 r, c+1   ->r,c+2
         # 아래 r+1,c  -> r+1,c+1
-        elif c + 1 < m - 1 and grid[r - 1][c + 1] == grid[r][c + 2] == grid[r + 1][c + 1] == 0:
+        if c + 1 < m - 1 and grid[r - 1][c + 1] == grid[r][c + 2] == grid[r + 1][c + 1] == 0:
             if r + 1 < n - 1 and grid[r + 1][c + 2] == grid[r + 2][c + 1] == 0:
                 r += 1
                 c += 1
                 d = (d + 1) % 4
-                change = True
+                change= True
         if not change:
             break
 
@@ -130,5 +131,6 @@ for p in range(player_num):
         grid[r][c - 1] = -(p + 1)
 
     bfs()
+
     ans += (r - 2)
 print(ans)
