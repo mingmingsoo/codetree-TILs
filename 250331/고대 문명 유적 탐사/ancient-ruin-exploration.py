@@ -1,4 +1,6 @@
 '''
+코드리팩토링
+
 문제 설명
     5*5, 유물 번호 1~7, 총 K턴
     1. 3*3 격자 90,180,270 회전
@@ -46,6 +48,27 @@ def rotation(grid):
     return ro_grid
 
 
+def fill():
+    for j in range(n):
+        for i in range(n - 1, -1, -1):
+            if grid[i][j] == 0:
+                grid[i][j] = fill_lst.pop(0)
+
+
+def delete(location):
+    for lr, lc in location:
+        grid[lr][lc] = 0
+
+
+def cal():
+    global cnt
+    for r in range(n):
+        for c in range(n):
+            if not visited[r][c]:
+                visited[r][c] = True
+                cnt += bfs(r, c)
+
+
 def bfs(sr, sc):
     q = deque([(sr, sc)])
     num = grid[sr][sc]
@@ -84,62 +107,20 @@ for turn in range(turn_num):
     for i in range(n - 2):
         for j in range(n - 2):
             small_grid = [_[j:j + 3] for _ in grid[i:i + 3]]
-            ro90 = rotation(small_grid)
-            for r in range(3):
-                for c in range(3):
-                    grid[r + i][c + j] = ro90[r][c]
 
-            visited = [[False] * n for i in range(n)]
-            cnt90 = 0
-            ele_location = []
-            for r in range(n):
-                for c in range(n):
-                    if not visited[r][c]:
-                        visited[r][c] = True
-                        cnt90 += bfs(r, c)
+            for ro_degree in range(90, 360, 90):
+                ro = rotation(small_grid)
+                for r in range(3):
+                    for c in range(3):
+                        grid[r + i][c + j] = ro[r][c]
 
-            if cnt90 > 0:
-                rotation_lst.append((-cnt90, 90, (j + 1, i + 1), ele_location))
-
-            grid = [_[:] for _ in grid_origin]
-
-            ro180 = rotation(ro90)
-            for r in range(3):
-                for c in range(3):
-                    grid[r + i][c + j] = ro180[r][c]
-
-            visited = [[False] * n for i in range(n)]
-            cnt180 = 0
-            ele_location = []
-            for r in range(n):
-                for c in range(n):
-                    if not visited[r][c]:
-                        visited[r][c] = True
-                        cnt180 += bfs(r, c)
-
-            if cnt180 > 0:
-                rotation_lst.append((-cnt180, 180, (j + 1, i + 1), ele_location))
-
-            grid = [_[:] for _ in grid_origin]
-
-            ro270 = rotation(ro180)
-            ele_location = []
-            for r in range(3):
-                for c in range(3):
-                    grid[r + i][c + j] = ro270[r][c]
-
-            visited = [[False] * n for i in range(n)]
-            cnt270 = 0
-            for r in range(n):
-                for c in range(n):
-                    if not visited[r][c]:
-                        visited[r][c] = True
-                        cnt270 += bfs(r, c)
-
-            if cnt270 > 0:
-                rotation_lst.append((-cnt270, 270, (j + 1, i + 1), ele_location))
-
-            grid = [_[:] for _ in grid_origin]
+                visited = [[False] * n for i in range(n)]
+                cnt = 0
+                ele_location = []
+                cal()
+                if cnt > 0:
+                    rotation_lst.append((-cnt, ro_degree, (j, i), ele_location))
+                grid = [_[:] for _ in grid_origin]
 
     if rotation_lst:
         rotation_lst.sort()
@@ -148,8 +129,6 @@ for turn in range(turn_num):
     else:
         break
 
-    j -= 1
-    i -= 1
     # 선택한거 기준으로 grid 실제로 반영
     small_grid = [_[j:j + 3] for _ in grid[i:i + 3]]
     ro_grid = [[0] * 3 for i in range(3)]
@@ -161,34 +140,19 @@ for turn in range(turn_num):
         for c in range(3):
             grid[r + i][c + j] = ro_grid[r][c]
 
-    for lr, lc in location:
-        grid[lr][lc] = 0
-
-    # 채우자
-    for j in range(n):
-        for i in range(n - 1, -1, -1):
-            if grid[i][j] == 0:
-                grid[i][j] = fill_lst.pop(0)
+    delete(location)
+    fill()
 
     while True:
         cnt = 0
         ele_location = []
         visited = [[False] * n for i in range(n)]
-        for r in range(n):
-            for c in range(n):
-                if not visited[r][c]:
-                    visited[r][c] = True
-                    cnt += bfs(r, c)
-
+        cal()
         if cnt > 0:
             ans += len(ele_location)
-            for lr, lc in ele_location:
-                grid[lr][lc] = 0
-            # 채우자
-            for j in range(n):
-                for i in range(n - 1, -1, -1):
-                    if grid[i][j] == 0:
-                        grid[i][j] = fill_lst.pop(0)
+            delete(ele_location)
+            fill()
+
         else:
             break
 
