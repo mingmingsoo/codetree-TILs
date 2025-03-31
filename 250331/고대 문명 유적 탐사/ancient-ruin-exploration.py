@@ -1,6 +1,5 @@
 '''
-코드리팩토링
-
+90,180,270 for문으로 한번에
 문제 설명
     5*5, 유물 번호 1~7, 총 K턴
     1. 3*3 격자 90,180,270 회전
@@ -38,14 +37,9 @@
 from collections import deque
 
 
-def rotation(grid):
-    ro_grid = [[0] * 3 for i in range(3)]
-
-    for i in range(3):
-        for j in range(3):
-            ro_grid[i][j] = grid[3 - j - 1][i]
-
-    return ro_grid
+def delete(location):
+    for lr, lc in location:
+        grid[lr][lc] = 0
 
 
 def fill():
@@ -55,11 +49,6 @@ def fill():
                 grid[i][j] = fill_lst.pop(0)
 
 
-def delete(location):
-    for lr, lc in location:
-        grid[lr][lc] = 0
-
-
 def cal():
     global cnt
     for r in range(n):
@@ -67,6 +56,15 @@ def cal():
             if not visited[r][c]:
                 visited[r][c] = True
                 cnt += bfs(r, c)
+
+def rotation(grid):
+    ro_grid = [[0] * 3 for i in range(3)]
+
+    for i in range(3):
+        for j in range(3):
+            ro_grid[i][j] = grid[3 - j - 1][i]
+
+    return ro_grid
 
 
 def bfs(sr, sc):
@@ -100,6 +98,8 @@ fill_lst = list(map(int, input().split()))  # 얘가 모자랄 일이 없다는�
 row = [-1, 1, 0, 0]
 col = [0, 0, 1, -1]
 
+
+
 for turn in range(turn_num):
     ans = 0
     rotation_lst = []
@@ -108,19 +108,23 @@ for turn in range(turn_num):
         for j in range(n - 2):
             small_grid = [_[j:j + 3] for _ in grid[i:i + 3]]
 
-            for ro_degree in range(90, 360, 90):
+            for degree in range(90, 360, 90):
                 ro = rotation(small_grid)
                 for r in range(3):
                     for c in range(3):
                         grid[r + i][c + j] = ro[r][c]
 
-                visited = [[False] * n for i in range(n)]
                 cnt = 0
                 ele_location = []
+                visited = [[False] * n for i in range(n)]
                 cal()
+
+
                 if cnt > 0:
-                    rotation_lst.append((-cnt, ro_degree, (j, i), ele_location))
+                    rotation_lst.append((-cnt, degree, (j, i), ele_location))
+
                 grid = [_[:] for _ in grid_origin]
+                small_grid = [_[:] for _ in ro]
 
     if rotation_lst:
         rotation_lst.sort()
@@ -148,6 +152,7 @@ for turn in range(turn_num):
         ele_location = []
         visited = [[False] * n for i in range(n)]
         cal()
+
         if cnt > 0:
             ans += len(ele_location)
             delete(ele_location)
