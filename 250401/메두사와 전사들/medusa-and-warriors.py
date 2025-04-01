@@ -1,242 +1,365 @@
 '''
-코드리팩토링, 함수화
-
-문제 설명
-    1. 메두사 이동 -> 경로 없으면 -1 출력하고 끝
-        한칸씩 공원을 향해서
-        간 곳에 전사 있으면 kill
-        bfs
-    2. 메두사 시선 -> 많이 돌 시킬 수 있고, 상하좌우 우선순위(돌 된 수)
-        bfs
-        dict 생성
-    3. 전사 이동
-        총 두 칸 이동
-        (1) 거리가 줄고 상하좌우
-        (2) 거리가 줄고 좌우상하
-        단 메두사 시야들어오는 곳으론 못감
-    4. 전사 공격(이동거리 계산 필요)
-        메두사 있는 위치랑 겹치면 전사가 쥬금(전사 수 계산 필요)
-입력
-    맵 크기 n, 전사 수 m
-    메두사 집, 공원 좌표
-    전사 정보
-    맵 정보
-출력
-    전사 이동 거리 합/ 돌 된 수/ 메두사를 공격한 전사 수
-필요한 함수
-    path_bfs() : 메두사 이동 경로
-    medusa_bfs() : 메두사 시야
-    junsa_bfs() : 전사 시야
-필요한 변수
-    view_grid = 불리언 2차배열
-    medusa_dict = 메두사 시야 방향 딕셔너리
-    junsa_dict = 전사 시야 방향 딕셔너리
-    시야확인용
-9 3
-0 3 0 5
-4 2 4 4 6 6
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-
-
-9 6
-4 3 4 5
-2 2 4 2 4 5 4 6 4 7 4 8
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-
-9 3
-4 3 4 5
-6 3 7 2 8 1
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0
-
-
-
-메두사 공원 못가
-5 1
-0 0 4 4
-3 3
-0 0 1 0 0
-0 0 1 0 0
-1 1 1 0 0
-0 0 0 0 0
-0 0 0 0 0
-
-
-
+옝니 코드 디버깅
 '''
-# --------------------------------- 입력 ---------------------------------
-from collections import deque
+di, dj = [-1, -1, 0, 1, 1, 1, 0, -1], [0, 1, 1, 1, 0, -1, -1, -1]   # 12시 방향부터 0, 시계 방향 순서대로 1씩 증가
+N, M = map(int, input().split())
+warriors = [[]]                                                 # 전사 위치 좌표 관리
+field = [[[] for _ in range(N)] for _ in range(N)]              # 전사 위치 표시
+rocks = [0 for _ in range(M+1)]                                 # 현재 돌 됐는지 여부를 관리할 배열
+mi, mj, er, ec = map(int, input().split())
 
-srow = [-1, -1, 0, 1, 1, 1, 0, -1]
-scol = [0, 1, 1, 1, 0, -1, -1, -1]
+lst = list(map(int, input().split()))
 
-# 방향별 메두사 시야
-medusa_dict = {0: (7, 0, 1), 1: (3, 4, 5), 2: (5, 6, 7), 3: (1, 2, 3)}
-# 메두사 방향, 전사 위치별 시야
-junsa_dict = {(0, -1): (7, 0), (0, 0): (0,), (0, 1): (0, 1),
-              (1, -1): (5, 4), (1, 0): (4,), (1, 1): (4, 3),
-              (2, -1): (7, 6), (2, 0): (6,), (2, 1): (6, 5),
-              (3, -1): (1, 2), (3, 0): (2,), (3, 1): (2, 3)}
+idx = 1
+for i in range(0, len(lst)-1, 2):
+    warriors.append([lst[i], lst[i+1]])
+    field[lst[i]][lst[i+1]].append(idx)
+    idx += 1
 
-n, junsa_num = map(int, input().split())
-sr, sc, er, ec = map(int, input().split())
-junsa_lst = []
-tmp = list(map(int, input().split()))
+arr = [list(map(int, input().split())) for _ in range(N)]       # 도로 정보 & 공원 표시
+arr[er][ec] = 'P'
 
-for junsa in range(0, junsa_num * 2, 2):
-    junsa_lst.append([tmp[junsa], tmp[junsa + 1]])
-grid = [list(map(int, input().split())) for i in range(n)]
+def oob(ti, tj):
+    return not (0<=ti<N and 0<=tj<N)
 
-# 전사 이동 방향  상하좌우       좌우상하
-move_row = [[-1, 1, 0, 0], [0, 0, -1, 1]]
-move_col = [[0, 0, -1, 1], [-1, 1, 0, 0]]
+def distance(ai, aj, bi, bj):
+    return abs(ai-bi) + abs(aj-bj)
 
+# 메두사 이동 함수
+def move_medusa():
 
-# --------------------------------- 함수 ---------------------------------
-def medusa_bfs(v, r, c): # 메두사 시야 bfs
-    # v 가 방향
-    q = deque([(r, c)])
+    q = [[mi, mj]]
+    v = [[[] for _ in range(N)] for _ in range(N)]
+    v[mi][mj].append([mi, mj])
+    path = []
+
     while q:
-        r, c = q.popleft()
-        for k in medusa_dict[v]:
-            nr = r + srow[k]
-            nc = c + scol[k]
-            if not (0 <= nr < n and 0 <= nc < n) or view_grid[nr][nc]:
-                continue
-            view_grid[nr][nc] = True # 볼 수 있어
-            q.append((nr, nc))
+        tmp = q
+        q = []
 
+        for t in tmp:
+            if arr[t[0]][t[1]] == 'P':
+                path = v[t[0]][t[1]]
+                break
 
-def junsa_view(jr, jc, v, d): # 전사 시야 bfs
-    q = deque([(jr, jc)])
-    while q:
-        r, c = q.popleft()
-        for k in junsa_dict[(v, d)]:
-            nr = r + srow[k]
-            nc = c + scol[k]
-            if not (0 <= nr < n and 0 <= nc < n) or not view_grid[nr][nc]:
-                continue
-            view_grid[nr][nc] = False # 아니 볼 수 없어
-            q.append((nr, nc))
+            for x in (0, 4, 6, 2):
+                ni, nj = t[0] + di[x], t[1] + dj[x]
 
-def booho(nx,x): # 부호를 반환
-    if nx < x : return -1
-    elif nx == x : return 0
-    elif nx > x : return 1
+                # 범위내, 미방문, 도로(0)
+                if not oob(ni, nj) and not v[ni][nj] and arr[ni][nj] != 1:
+                    q.append([ni, nj])
+                    v[ni][nj] = v[t[0]][t[1]] + [[ni, nj]]
 
-def junsa_bfs(v, r, c):
-    for jr, jc in junsa_lst:
-        if view_grid[jr][jc]:
-            if v == 0 or v == 1:
-                junsa_view(jr, jc, v, booho(jc,c))
-            elif v == 2 or v == 3:
-                junsa_view(jr, jc, v, booho(jr,r))
-
-
-def bfs(sr, sc, er, ec): # 메두사 경로 bfs
-    bfs_row = [-1, 1, 0, 0]
-    bfs_col = [0, 0, -1, 1]
-    visited = [[False] * n for i in range(n)]
-    visited[sr][sc] = True
-    q = deque([(sr, sc, [])])
-    while q:
-        r, c, path = q.popleft()
-        if (r, c) == (er, ec):
-            return path
-        for k in range(4):
-            nr = r + bfs_row[k]
-            nc = c + bfs_col[k]
-            if not (0 <= nr < n and 0 <= nc < n) or visited[nr][nc] or grid[nr][nc]:
-                continue
-            visited[nr][nc] = True
-            q.append((nr, nc, path + [(nr, nc)]))
-
-    return -1
-
-path = bfs(sr, sc, er, ec)
-if path == -1: # 공원 못가
-    print(-1)
-else:
-
-    for r, c in path:
-        # 메두사 위치가 지금 r,c
-        if (r,c) == (er,ec):
-            print(0)
+        if path:
             break
-        move_dist, stone, attack = 0, 0, 0
 
-        # 죽는 애 검사
-        for i in range(len(junsa_lst) - 1, -1, -1):
-            jr, jc = junsa_lst[i]
-            if (r, c) == (jr, jc):
-                junsa_lst.pop(i)  # 메두사가 죽임
+    # 공원에 도달하지 못했다면 빈 배열 반환
+    if not path:
+        return [-1, -1]
 
-        # 메두사 시야
-        view_lst = []  # 돌이 된 전사 수 , 방향, 2차원 배열 맵
-        for v in range(4):
-            view_grid = [[False] * n for i in range(n)]
-            medusa_bfs(v, r, c)
-            junsa_bfs(v, r, c)
+    return path[1]
 
-            # 여기서 갯수세서 넣어주자
-            doll_cnt = 0
-            for jr, jc in junsa_lst:
-                if view_grid[jr][jc]:
-                    doll_cnt += 1
+# 초기 시야각 배열 만드는 함수
+def make_view(direction):
 
-            view_lst.append((-doll_cnt, v, view_grid)) # 깊은복사 안해줘도 된다.
+    # 위쪽 시야각
+    tmp_view = [[0 for _ in range(N)] for _ in range(N)]
+    if direction == 0:
+        start, can_see = mi-1, 1
 
-        view_lst.sort()
-        doll, d, view = view_lst.pop(0)
-        stone += abs(doll)
+        while start >= 0:
+            for j in range(mj - can_see, mj + can_see + 1):
+                if oob(start, j): continue
+
+                tmp_view[start][j] = 1
+            start -= 1
+            can_see += 1
+
+    elif direction == 4:
+        start, can_see = mi + 1, 1
+
+        while start < N:
+            for j in range(mj - can_see, mj + can_see + 1):
+                if oob(start, j): continue
+
+                tmp_view[start][j] = 1
+            start += 1
+            can_see += 1
+
+    elif direction == 6:
+        start, can_see = mj - 1, 1
+
+        while start >= 0:
+            for i in range(mi - can_see, mi + can_see + 1):
+                if oob(i, start): continue
+                tmp_view[i][start] = 1
+            start -= 1
+            can_see += 1
+
+    else:
+        start, can_see = mj + 1, 1
+
+        while start < N:
+            for i in range(mi - can_see, mi + can_see + 1):
+                if oob(i, start): continue
+                tmp_view[i][start] = 1
+            start += 1
+            can_see += 1
+
+    return tmp_view
+
+# 전사 - 메두사 상대 위치 파악 (시야각 없어지는 방향 반환)
+def get_relative_pos(ci, cj, d):
+
+    if d == 0:
+        if cj < mj:return [0, 7]
+        elif cj == mj:
+            return [0]
+        else:return [0, 1]
+    elif d == 4:
+        if cj < mj:return [4, 5]
+        elif cj == mj:
+            return [4]
+        else:return [3, 4]
+    elif d == 6:
+        if ci < mi:return [6, 7]
+        elif ci == mi:
+            return [6]
+        else:return [5, 6]
+    else:
+        if ci < mi:return [1, 2]
+        elif ci == mi:
+            return [2]
+        else:return [2, 3]
+
+# 시야각 재조정
+def rearrange_view(ci, cj, cview, direcs):
+
+    if len(direcs) == 1:
+        move = 1
+        while True:
+            ni, nj = ci + move * di[direcs[0]], cj + move * dj[direcs[0]]
+
+            if oob(ni, nj): break
+            cview[ni][nj] = 0
+            move += 1
+    else:
+        if direcs == [0, 7]:
+            cnt = 2
+            for ii in range(ci - 1, -1, -1):
+                for jj in range(cj, cj - cnt, -1):
+                    if oob(ii, jj): break
+                    cview[ii][jj] = 0
+                cnt += 1
+        elif direcs == [0, 1]:
+            cnt = 2
+            for ii in range(ci - 1, -1, -1):
+                for jj in range(cj, cj + cnt):
+                    if oob(ii, jj): break
+                    cview[ii][jj] = 0
+                cnt += 1
+        elif direcs == [4, 5]:
+            cnt = 2
+            for ii in range(ci + 1, N):
+                for jj in range(cj, cj - cnt, -1):
+                    if oob(ii, jj): break
+                    cview[ii][jj] = 0
+                cnt += 1
+        elif direcs == [3, 4]:
+            cnt = 2
+            for ii in range(ci + 1, N):
+                for jj in range(cj, cj + cnt):
+                    if oob(ii, jj): break
+                    cview[ii][jj] = 0
+                cnt += 1
+        elif direcs == [6, 7]:
+            cnt = 2
+            for jj in range(cj - 1, -1, -1):
+                for ii in range(ci, ci - cnt, -1):
+                    if oob(ii, jj): break
+                    cview[ii][jj] = 0
+                cnt += 1
+        elif direcs == [5, 6]:
+            cnt = 2
+            for jj in range(cj - 1, -1, -1):
+                for ii in range(ci, ci + cnt):
+                    if oob(ii, jj): break
+                    cview[ii][jj] = 0
+                cnt += 1
+        elif direcs == [1, 2]:
+            cnt = 2
+            for jj in range(cj + 1, N):
+                for ii in range(ci, ci - cnt, -1):
+                    if oob(ii, jj): break
+                    cview[ii][jj] = 0
+                cnt += 1
+        elif direcs == [2, 3]:
+            cnt = 2
+            for jj in range(cj + 1, N):
+                for ii in range(ci, ci + cnt):
+                    if oob(ii, jj): break
+                    cview[ii][jj] = 0
+                cnt += 1
+
+# 시선에 들어오는 전사들 확인
+def check_seesun(cview, direction):
+
+    sm = 0                                                          # 돌로 변한 전사 수
+    tmp_rocks = []
+    if direction == 0:
+        for i in range(mi - 1, -1, -1):
+            for j in range(N):
+
+                if cview[i][j] == 0:                                # 시야각에 들어오지 않는 칸은 생략
+                    continue
+
+                if field[i][j]:
+                    sm += len(field[i][j])
+                    for warr in field[i][j]:                        # 돌로 변하는 전사 번호 저장
+                        tmp_rocks.append(warr)
+                    direcs = get_relative_pos(i, j, direction)      # 전사에 의해 가려지는 방향
+                    rearrange_view(i, j, cview, direcs)
+
+    elif direction == 4:
+        for i in range(mi + 1, N):
+            for j in range(N):
+                if cview[i][j] == 0:                                # 시야각에 들어오지 않는 칸은 생략
+                    continue
+
+                if field[i][j]:
+                    sm += len(field[i][j])
+                    for warr in field[i][j]:                        # 돌로 변하는 전사 번호 저장
+                        tmp_rocks.append(warr)
+                    direcs = get_relative_pos(i, j, direction)      # 전사에 의해 가려지는 방향
+                    rearrange_view(i, j, cview, direcs)
+
+    elif direction == 6:
+        for j in range(mj - 1, -1, -1):
+            for i in range(N):
+                if cview[i][j] == 0:                                # 시야각에 들어오지 않는 칸은 생략
+                    continue
+
+                if field[i][j]:
+                    sm += len(field[i][j])
+                    for warr in field[i][j]:                        # 돌로 변하는 전사 번호 저장
+                        tmp_rocks.append(warr)
+                    direcs = get_relative_pos(i, j, direction)      # 전사에 의해 가려지는 방향
+                    rearrange_view(i, j, cview, direcs)
+
+    else:
+        for j in range(mj + 1, N):
+            for i in range(N):
+                if cview[i][j] == 0:                                # 시야각에 들어오지 않는 칸은 생략
+                    continue
+
+                if field[i][j]:
+                    sm += len(field[i][j])
+                    for warr in field[i][j]:                        # 돌로 변하는 전사 번호 저장
+                        tmp_rocks.append(warr)
+                    direcs = get_relative_pos(i, j, direction)      # 전사에 의해 가려지는 방향
+                    rearrange_view(i, j, cview, direcs)
+
+    return sm, tmp_rocks, cview
+
+# 메두사 시선
+def seesun_medusa():
+    global rocks
+
+    turn_rocks = []                                             # 돌로 변할 전사 인덱스 리스트
+    mx = 0
+    ret_view = []
+    for x in (0, 4, 6, 2):
+        view = make_view(x)                                     # 방향에 따른 시야각 생성
+        turn_rock_cnt, tmp_rocks, view = check_seesun(view, x)        # 방향별로 시야에 들어오는 전사 수
+        if mx < turn_rock_cnt:
+            ret_view = view
+            turn_rocks = tmp_rocks
+            mx = turn_rock_cnt
+
+    for t in turn_rocks:
+        rocks[t] = 1
+
+    return ret_view
 
 
-        # 전사들 이동
-        for idx, junsa in enumerate(junsa_lst):
-            if view[junsa[0]][junsa[1]]:  # 돌이여유
-                continue
-            # 총 두번의 이동
-            for turn in range(2):
-                jr, jc = junsa_lst[idx]
-                cur = abs(jr - r) + abs(jc - c)
-                for k in range(4):
-                    nr = jr + move_row[turn][k]
-                    nc = jc + move_col[turn][k]
-                    next = abs(nr - r) + abs(nc - c)
-                    if (0 <= nr < n and 0 <= nc < n) and next < cur and not view[nr][nc]:
-                        # 움직일 수 있다!
-                        move_dist += 1
-                        junsa_lst[idx][0] = nr
-                        junsa_lst[idx][1] = nc
-                        break
+# 전사 이동
+def move_warriors():
 
-        # 전사 공격
-        for i in range(len(junsa_lst) - 1, -1, -1):
-            jr, jc = junsa_lst[i]
-            if (r, c) == (jr, jc):
-                attack += 1
-                junsa_lst.pop(i) # 전사 주금
-        print(move_dist, stone, attack)
+    sm = 0                                              # 전사들 이동 칸 수
+    attack = 0
+    for i in range(1, M+1):
+        if not warriors[i] or rocks[i] == 1:
+            continue
+
+        # 첫 번째 이동
+        wi, wj = warriors[i]
+        dist = distance(wi, wj, mi, mj)
+        for x in (0, 4, 6, 2):
+            ni, nj = wi + di[x], wj + dj[x]
+
+            if not oob(ni, nj) and distance(ni, nj, mi, mj) < dist and view[ni][nj] == 0:
+                field[ni][nj].append(field[wi][wj].pop(field[wi][wj].index(i)))
+                sm += 1
+                wi, wj = ni, nj
+                dist = distance(ni, nj, mi, mj)
+                break
+
+        # 메두사와 같은 칸에 도달했을 경우 주금
+        if [wi, wj] == [mi, mj]:
+            attack += 1
+            field[wi][wj].pop(field[wi][wj].index(i))
+            warriors[i] = []
+            continue
+
+        # 두 번째 이동
+        for x in (6, 2, 0, 4):
+            ni, nj = wi + di[x], wj + dj[x]
+
+            if not oob(ni, nj) and distance(ni, nj, mi, mj) < dist and view[ni][nj] == 0:
+                field[ni][nj].append(field[wi][wj].pop(field[wi][wj].index(i)))
+                sm += 1
+                wi, wj = ni, nj
+                break
+
+        # 메두사와 같은 칸에 도달했을 경우 주금
+        if [wi, wj] == [mi, mj]:
+            attack += 1
+            field[wi][wj].pop(field[wi][wj].index(i))
+            warriors[i] = []
+            continue
+
+        warriors[i] = [wi, wj]
+
+    return sm, attack
+
+while True:
+
+    # [1] 메두사 이동
+    mi, mj = move_medusa()
+
+    # print("메두사 위치 : ", (mi, mj))
+
+    # break point: 메두사 -> 공원 최단 경로 없으면 중단 or 공원에 도착했으면 중단
+    if arr[mi][mj] == 'P':
+        print(0)
+        break
+    elif [mi, mj] == [-1, -1]:
+        print(-1)
+        break
+
+    # 메두사가 이동한 칸에 전사가 있으면 전사 주금 처리
+    if field[mi][mj]:
+        for warr in field[mi][mj]:
+            warriors[warr] = []
+            field[mi][mj].pop(field[mi][mj].index(warr))
+
+    # [2] 메두사 시선
+    view = seesun_medusa()
+
+    # [3] 전사 이동
+    move_cnt, attacks = move_warriors()
+
+    print(move_cnt, sum(rocks), attacks)
+
+    rocks = [0 for _ in range(M+1)]
+
