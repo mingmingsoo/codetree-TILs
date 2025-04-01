@@ -1,179 +1,7 @@
 '''
-문제 설명
-    1. 시간 이상
-        시간 이상은 2차원 배열로 미리 만들어 놓기.
-    2. 이동 bfs
-        (1) 3차원 탈출
-        (2) 2차원 탈출
-            -> 탈출구를 찾는게 관건...
-
-필요한 변수
-cube = [h,r,c] : 면과 좌표
-grid = [r,c] : 좌표
-
-필요한 함수
-bfs3 : 3차원
-bfs2 : 2차원
-
-시간 이상이 좀 헷갈리네. bfs 작성 후 보완하기
-변수명 확인 잘해라
-3차원 탈출구 찾는거 엣지케이스 넣어봐라
-
-시간 이상때문에 -1 되는지
-8 3 3
-4 0 0 0 0 0 0 0
-0 1 1 1 1 1 0 0
-0 1 3 3 3 1 0 1
-0 1 3 3 3 1 0 1
-0 1 3 3 3 0 0 0
-0 1 1 1 1 1 1 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 1 1
-1 1 1
-0 0 0
-0 1 1
-1 1 1
-1 0 1
-1 1 1
-0 0 1
-1 0 0
-1 0 1
-0 0 0
-1 0 0
-1 1 1
-2 0 0
-0 1 0
-0 0 0
-0 7 1 14
-6 3 3 2
-4 7 1 1
-
-
-
-
-다른 면일 때 확인 (북쪽)
-8 3 2
-4 0 0 0 0 0 0 0
-0 1 1 1 1 1 0 0
-0 1 3 3 3 1 0 1
-0 1 3 3 3 1 0 1
-0 1 3 3 3 1 0 0
-0 1 1 0 1 1 1 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 1 1
-1 1 1
-0 0 0
-0 1 1
-1 1 1
-1 0 1
-1 1 1
-0 0 1
-1 0 0
-1 0 1
-0 0 0
-1 0 0
-1 1 1
-2 0 0
-0 1 0
-0 0 0
-0 7 1 14
-6 3 3 2
-
-
-
-
-
-
-8 3 2
-4 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 1 1 1 0
-0 0 0 0 1 3 3 3
-0 0 0 0 1 3 3 3
-0 0 0 0 1 3 3 3
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 2
-7 0 1 100
-7 0 1 100
-
-
-
-8 3 2
-4 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 1 0 1 1
-0 0 0 0 1 3 3 3
-0 0 0 0 1 3 3 3
-0 0 0 0 1 3 3 3
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 0
-0 0 2
-7 0 1 100
-7 0 1 100
-
-
-
-
-8 4 2
-4 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 1 1 0 1 1 1 0
-0 1 3 3 3 3 1 0
-0 1 3 3 3 3 1 0
-0 1 3 3 3 3 1 0
-0 1 3 3 3 3 1 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 2
-7 7 1 100
-7 7 1 100
+코드 리팩토링
+3차원 bfs 디버깅용 path 변수 제거
+시간이상현상 2차원으로 변경
 '''
 # --------------------------------- 입력, 좌표찾기 ---------------------------------
 
@@ -200,6 +28,8 @@ def find():  # 3 시작 위치 찾기
         for j in range(n):
             if grid[i][j] == 3:
                 return i, j
+
+
 startx, starty = find()
 
 for i in range(n):  # 2차원 목적지 찾기
@@ -220,7 +50,7 @@ for i in range(n):  # 2차원 시작점, 3차원 목적지 찾기
                 nr = i + row[k]
                 nc = j + col[k]
                 if 0 <= nr < n and 0 <= nc < n and grid[nr][nc] == 0:
-                    sr2, sc2 = nr, nc # 2차원 시작점
+                    sr2, sc2 = nr, nc  # 2차원 시작점
                     # 이제 3차원 목적지 찾기
                     eh3 = k  # k가 면 idx가 될거임.
                     er3 = m - 1  # r은 무조건 2임.
@@ -228,25 +58,25 @@ for i in range(n):  # 2차원 시작점, 3차원 목적지 찾기
                         ec3 = m - 1 - (nr - startx)
                     elif k == 1:  # 서
                         ec3 = nr - startx
-                    elif k == 3:  # 북.
-                        ec3 = m - 1 - (nc - starty)
                     elif k == 2:  # 남
                         ec3 = nc - starty
+                    elif k == 3:  # 북.
+                        ec3 = m - 1 - (nc - starty)
                     break
 
-# ---------------------- 시간 이상 3차원 배열 만들기 ----------------------
-time_attack = [[[] * n for i in range(n)] for i in range(n)]
+# ---------------------- 시간 이상 2차원 배열 만들기 ----------------------
+time_attack = [[1000 * 20 + 1] * n for i in range(n)]
 time_info = [list(map(int, input().split())) for i in range(time_attack_num)]
 for tr, tc, td, tv in time_info:
     v = tv
-    time_attack[tr][tc].append(0)
+    time_attack[tr][tc] = 0
 
     for k in range(n):
         ntr = tr + row[td]
         ntc = tc + col[td]
         if not (0 <= ntr < n and 0 <= ntc < n) or grid[ntr][ntc]:
             break
-        time_attack[ntr][ntc].append(tv)
+        time_attack[ntr][ntc] = min(tv, time_attack[ntr][ntc])
         tv += v
         tr = ntr
         tc = ntc
@@ -256,10 +86,10 @@ for tr, tc, td, tv in time_info:
 def bfs3(sh, sr, sc, eh, er, ec):
     visited = [[[False] * n for i in range(n)] for i in range(5)]
     visited[sh][sr][sc] = True
-    q = deque([(sh, sr, sc, 0, [(sh, sr, sc)])])
+    q = deque([(sh, sr, sc, 0)])
 
     while q:
-        h, r, c, time, path = q.popleft()
+        h, r, c, time = q.popleft()
         if (h, r, c) == (eh, er, ec):
             return time
 
@@ -342,7 +172,7 @@ def bfs3(sh, sr, sc, eh, er, ec):
             if not (0 <= nr < m and 0 <= nc < m) or visited[nh][nr][nc] or cube[nh][nr][nc] == 1:
                 continue
             visited[nh][nr][nc] = True
-            q.append((nh, nr, nc, time + 1, path + [(nh, nr, nc)]))
+            q.append((nh, nr, nc, time + 1))
     return -1
 
 
@@ -361,30 +191,25 @@ def bfs2(sr, sc, er, ec):
             nc = c + col[k]
             if not (0 <= nr < n and 0 <= nc < n) or visited[nr][nc] or grid[nr][nc] == 1 or grid[nr][nc] == 3:
                 continue
-            go = True
-            for attack in time_attack[nr][nc]:
-                if ans + time + 1 >= attack:
-                    go = False
-                    break
-            if not go:
+            if ans + time + 1 >= time_attack[nr][nc]:
                 continue
             visited[nr][nc] = True
             q.append((nr, nc, time + 1))
     return -1
 
+
 # --------------------------------- 메인 ---------------------------------
 ans = bfs3(sh3, sr3, sc3, eh3, er3, ec3)
-if ans != -1: # ans == -1이면 3차원 탈출도 못함
+if ans != -1:  # ans == -1이면 3차원 탈출도 못함
     ans += 1
 
-    for attack in time_attack[sr2][sc2]: # 내려왔는데 시간이상에 바로 걸려버림
-        if attack <= ans:
-            ans = -1
-            break
+    if time_attack[sr2][sc2] <= ans:
+        ans = -1 # 내려왔는데 시간이상..
+
 
     if ans != -1:
         next_ans = bfs2(sr2, sc2, er2, ec2)
-        if next_ans == -1: # 2차원 탈출 못함
+        if next_ans == -1:  # 2차원 탈출 못함
             ans = -1
         else:
             ans += next_ans
