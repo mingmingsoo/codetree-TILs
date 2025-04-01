@@ -1,8 +1,4 @@
-'''
-코드 리팩토링
-3차원 bfs 디버깅용 path 변수 제거
-시간이상현상 2차원으로 변경
-'''
+
 # --------------------------------- 입력, 좌표찾기 ---------------------------------
 
 from collections import deque
@@ -49,7 +45,7 @@ for i in range(n):  # 2차원 시작점, 3차원 목적지 찾기
             for k in range(4):
                 nr = i + row[k]
                 nc = j + col[k]
-                if 0 <= nr < n and 0 <= nc < n and grid[nr][nc] == 0:
+                if 0 <= nr < n and 0 <= nc < n and (grid[nr][nc] == 0 or grid[nr][nc] == 4):
                     sr2, sc2 = nr, nc  # 2차원 시작점
                     # 이제 3차원 목적지 찾기
                     eh3 = k  # k가 면 idx가 될거임.
