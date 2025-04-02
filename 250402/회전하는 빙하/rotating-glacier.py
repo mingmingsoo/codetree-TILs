@@ -1,6 +1,3 @@
-'''
-백준하고 문제 다름;;;;
-'''
 from collections import deque
 
 poww, _ = map(int, input().split())
@@ -43,11 +40,12 @@ def rotation(si, sj, level, half):  # half칸 씩 회전..?
 row = [-1, 1, 0, 0]
 col = [0, 0, 1, -1]
 for l in level_lst:
-    level = 2 ** l
+    if l != 0:
 
-    for i in range(0, n, level):
-        for j in range(0, n, level):
-            rotation(i, j, level, level // 2)
+        level = 2 ** l
+        for i in range(0, n, level):
+            for j in range(0, n, level):
+                rotation(i, j, level, level // 2)
 
     melting = [[0] * n for i in range(n)]
     # 얼음 녹이기
