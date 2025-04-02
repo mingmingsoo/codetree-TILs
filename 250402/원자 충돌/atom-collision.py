@@ -21,6 +21,7 @@ for a in range(atom):
 
 for t in range(time):
     new_grid = [[[] for i in range(n)] for i in range(n)]
+
     for i in range(n):
         for j in range(n):
             if grid[i][j]:
@@ -54,13 +55,11 @@ for t in range(time):
                 if udlr == 0 or udlr == l:
                     # 모두 상하좌우 혹은 모두 대각선
                     for d in (0, 2, 4, 6):
-                        add_lst.append(((i + row[d] * ts) % n, (j + col[d] * ts) % n, tm, ts, d))
+                        new_grid[i][j].append((tm, ts, d))
                 else:
                     for d in (1,3,5,7):
-                        add_lst.append(((i + row[d] * ts) % n, (j + col[d] * ts) % n, tm, ts, d))
+                        new_grid[i][j].append((tm, ts, d))
 
-    for r, c, m, s, d in add_lst:
-        new_grid[r][c].append((m, s, d))
     grid = new_grid
 ans = 0
 for i in range(n):
