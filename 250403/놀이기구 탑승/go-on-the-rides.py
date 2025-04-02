@@ -45,7 +45,7 @@ for i in range(1, n * n):
                         empty += 1
                     if grid[nr][nc] in like_lst:
                         like += 1
-                seat_lst.append((-like, empty, i, j))
+                seat_lst.append((-like, -empty, i, j))
     seat_lst.sort()
     _1, _2, r, c = seat_lst[0]
     grid[r][c] = num
@@ -68,4 +68,5 @@ for i in range(n):
                 like += 1
         if like > 0:
             score += 10 ** (like - 1)
+
 print(score)
