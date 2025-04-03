@@ -3,7 +3,8 @@ grid = [list(map(int, input().split())) for i in range(n)]
 nutrition = set([(n - 1, 0), (n - 1, 1), (n - 2, 0), (n - 2, 1)])
 
 row = [0, -1, -1, -1, 0, 1, 1, 1]
-col = [-1, -1, 0, 1, 1, 1, 0, -1]
+col = [1, 1, 0, -1, -1, -1, 0, 1]
+
 
 for t in range(time):
     d, l = map(int, input().split())
