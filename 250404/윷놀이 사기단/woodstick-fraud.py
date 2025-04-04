@@ -14,7 +14,7 @@ ans = 0
 
 def duple(horse,cur,where):
     for i in range(4):
-        if i != horse and cur == where[i]:
+        if i != horse and  cur != 32 and cur == where[i]:
             return True
     return False
 
@@ -30,7 +30,6 @@ def duple_perm(idx):
             go = dice[idx]
             cur = where[horse]
             cur = adj[cur][-1]  # 일단 한 칸 이동
-            where[horse] = cur
             if cur == 32:
                 where[horse] = 32  # 혹시 도착 했나?
                 continue
@@ -43,7 +42,6 @@ def duple_perm(idx):
                 return
             where[horse] = cur
             score += score_info[cur]
-
         ans = max(ans,score)
         return
 
