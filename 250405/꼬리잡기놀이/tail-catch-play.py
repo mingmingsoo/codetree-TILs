@@ -66,7 +66,9 @@ for i in range(n):
             num += 1
 score = 0
 for t in range(turn):
-
+    # print("-----이동 전-----",t,"초")
+    # for _ in grid:
+    #     print(_)
     # 1. 머리 따라서 이동
     for k, v in team_info.items():
         hr, hc = v[0]
@@ -87,7 +89,9 @@ for t in range(turn):
             r, c = v[i]
             grid[r][c] = 2
         grid[v[len(v) - 1][0]][v[len(v) - 1][1]] = 3
-
+    # print("-----이동 후-----",score,t,"초")
+    # for _ in grid:
+    #     print(_)
     if (t // n) % 4 == 0:
         mod = t % n
         # print(t, (t // n) % 4,  mod)
@@ -116,11 +120,11 @@ for t in range(turn):
         # print(t, (t // n) % 4, mod)
         find = False
         for i in range(n - 1, -1, -1):
-            if 1 <= grid[mod][i] <= 3:  # 공 발견!!
-                team_num = num_map[mod][i]
+            if 1 <= grid[i][mod] <= 3:  # 공 발견!!
+                team_num = num_map[i][mod]
                 for idx, location in enumerate(team_info[team_num]):
                     r, c = location
-                    if (r, c) == (mod, i):
+                    if (r, c) == (i,mod):
                         score += (idx + 1) ** 2
                         team_info[team_num].reverse()
                         v = team_info[team_num]
@@ -160,11 +164,11 @@ for t in range(turn):
         # print(t, (t // n) % 4, mod)
         find = False
         for i in range(n):
-            if 1 <= grid[mod][i] <= 3:  # 공 발견!!
-                team_num = num_map[mod][i]
+            if 1 <= grid[i][mod] <= 3:  # 공 발견!!
+                team_num = num_map[i][mod]
                 for idx, location in enumerate(team_info[team_num]):
                     r, c = location
-                    if (r, c) == (mod, i):
+                    if (r, c) == (i, mod):
                         score += (idx + 1) ** 2
                         team_info[team_num].reverse()
                         v = team_info[team_num]
@@ -177,7 +181,7 @@ for t in range(turn):
             if find:
                 break
 
-    # print("----------")
+    # print("-----공 맞고 나서-----",t,"초")
     # for _ in grid:
     #     print(_)
 print(score)
