@@ -33,35 +33,38 @@ row = [-1, 0, 1, 0]
 col = [0, 1, 0, -1]
 
 
-def move(win_idx, lose_idx, x, y):
+def move(win_idx, lose_idx):
     # 진 플레이어 이동
-    _, _, d, s, gun = player_lst[lose_idx]
-    if gun:
-        gun_grid[x][y].append(gun)
-        gun = 0
+    lr, lc, ld, ls, lgun = player_lst[lose_idx]
+    if lgun:
+        gun_grid[lr][lc].append(lgun)
+        lgun = 0
+
     for k in range(4):
-        nr = x + row[d]
-        nc = y + col[d]
-        if 0 <= nr < n and 0 <= nc < n and player_grid[nr][nc] == 0:
+        nlr = lr + row[ld]
+        nlc = lc + col[ld]
+        if 0 <= nlr < n and 0 <= nlc < n and player_grid[nlr][nlc] == 0:
             break
         else:
-            d = (d + 1) % 4
-    if gun_grid[nr][nc]:
-        gun = max(gun_grid[nr][nc])
-        gun_grid[nr][nc].remove(gun)
-    player_lst[lose_idx] = (nr, nc, d, s, gun)
-    player_grid[nr][nc] = lose_idx
+            ld = (ld + 1) % 4
+    nlr = lr + row[ld]
+    nlc = lc + col[ld]
+    if gun_grid[nlr][nlc]:
+        lgun = max(gun_grid[nlr][nlc])
+        gun_grid[nlr][nlc].remove(lgun)
+    player_lst[lose_idx] = (nlr, nlc, ld, ls, lgun)
+    player_grid[nlr][nlc] = lose_idx
 
     # 이긴 플레이어 이동
-    _, _, d, s, gun = player_lst[win_idx]
-    if gun_grid[x][y]:
-        other_gun = max(gun_grid[x][y])
-        if other_gun > gun:
-            gun_grid[x][y].remove(other_gun)
-            gun_grid[x][y].append(gun)
-            gun = other_gun
-    player_lst[win_idx] = (x, y, d, s, gun)
-    player_grid[x][y] = win_idx
+    wr, wc, wd, ws, wgun = player_lst[win_idx]
+    if gun_grid[wr][wc]:
+        other_gun = max(gun_grid[wr][wc])
+        if other_gun > wgun:
+            gun_grid[wr][wc].remove(other_gun)
+            gun_grid[wr][wc].append(wgun)
+            wgun = other_gun
+    player_lst[win_idx] = (wr, wc, wd, ws, wgun)
+    player_grid[wr][wc] = win_idx
 
 
 for t in range(turn):
@@ -86,6 +89,7 @@ for t in range(turn):
             player_grid[nr][nc] = p
             player_lst[p] = (nr, nc, d, s, gun)
         else:
+            player_lst[p] = (nr, nc, d, s, gun)
             px = player_grid[nr][nc]
             rx, cx, dx, sx, gunx = player_lst[px]  # 상대 정보
             win_idx = lose_idx = 0
@@ -101,6 +105,6 @@ for t in range(turn):
             else:
                 win_idx, lose_idx = px, p
             score[win_idx] += abs(my_power - other_power)
-            move(win_idx, lose_idx, nr, nc)
+            move(win_idx, lose_idx)
 
 print(*score[1:])
