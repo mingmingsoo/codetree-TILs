@@ -30,22 +30,25 @@
 3 1 2
 2 2
 '''
+# -------------------------- 입력 --------------------------------- 
 n, rn, tn, turn = map(int, input().split())
 grid = [[[] for i in range(n)] for i in range(n)]
 tree = [[0] * n for i in range(n)]
+row = [-1, 0, 1, 0]
+col = [0, 1, 0, -1]
+
 for _ in range(rn):
     rr, rc, rd = map(int, input().split())
     if rd == 1:
         grid[rr - 1][rc - 1].append(1)
     else:
         grid[rr - 1][rc - 1].append(2)
+        
 for _ in range(tn):
     tr, tc = map(int, input().split())
     tree[tr - 1][tc - 1] = 1
 
-row = [-1, 0, 1, 0]
-col = [0, 1, 0, -1]
-# 술래 방향 미리 만들기
+# -------------------------- 술래 방향 미리 만들기 --------------------------------- 
 center_to_zero = [[0] * n for i in range(n)]
 zero_to_center = [[0] * n for i in range(n)]
 r = c = n // 2
@@ -69,13 +72,7 @@ while (r, c) != (0, 0):
 center_to_zero[0][0] = 2
 
 
-def myprint(arr):
-    for i in range(n):
-        for j in range(n):
-            print("↑→↓←"[arr[i][j]], end=" ")
-        print()
-
-
+# -------------------------- 술래 잡기 --------------------------------- 
 score = 0
 change = 1  # 1 이면 center -> zero,-1 이면 zero -> center
 r = c = n // 2
@@ -110,8 +107,6 @@ for t in range(turn):
     r += row[d]
     c += col[d]
     vd = d_grid[r][c]
-
-
     for l in range(3):
         nr = r + row[vd] * l
         nc = c + col[vd] * l
@@ -124,4 +119,13 @@ for t in range(turn):
     if (r, c) == (0, 0) or (r, c) == (n // 2, n // 2):
         change *= -1
     grid = new_grid
+    
 print(score)
+
+
+# -------------------------- myprint --------------------------------- 
+def myprint(arr):
+    for i in range(n):
+        for j in range(n):
+            print("↑→↓←"[arr[i][j]], end=" ")
+        print()
