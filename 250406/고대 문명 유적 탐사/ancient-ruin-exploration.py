@@ -9,6 +9,8 @@ n = 5
 turn, fn = map(int, input().split())
 grid = [list(map(int, input().split())) for i in range(n)]
 fill = list(map(int, input().split()))
+row = [-1, 1, 0, 0]
+col = [0, 0, 1, -1]
 
 
 def rotation(small_grid):
@@ -17,10 +19,6 @@ def rotation(small_grid):
         for j in range(3):
             ro[i][j] = small_grid[3 - j - 1][i]
     return ro
-
-
-row = [-1, 1, 0, 0]
-col = [0, 0, 1, -1]
 
 
 def bfs():
@@ -59,40 +57,21 @@ for t in range(turn):
     for r in range(3):
         for c in range(3):
             grid_origin = [_[:] for _ in grid]
-            small_grid = [_[c:c + 3] for _ in grid[r:r + 3]]
-            ro90 = rotation(small_grid)
-            for i in range(3):
-                for j in range(3):
-                    grid[i + r][j + c] = ro90[i][j]
-            cnt, location = bfs()
-
-            if cnt:
-                sel.append((-cnt, 90, c, r,  [_[:] for _ in grid]))
-
-            ro180 = rotation(ro90)
-            for i in range(3):
-                for j in range(3):
-                    grid[i + r][j + c] = ro180[i][j]
-            cnt, location = bfs()
-
-            if cnt:
-                sel.append((-cnt, 180, c, r,  [_[:] for _ in grid]))
-
-            ro270 = rotation(ro180)
-            for i in range(3):
-                for j in range(3):
-                    grid[i + r][j + c] = ro270[i][j]
-            cnt, location = bfs()
-
-            if cnt:
-                sel.append((-cnt, 270, c, r,  [_[:] for _ in grid]))
-
+            for degree in (90, 360, 90):
+                small_grid = [_[c:c + 3] for _ in grid[r:r + 3]]
+                ro = rotation(small_grid)
+                for i in range(3):
+                    for j in range(3):
+                        grid[i + r][j + c] = ro[i][j]
+                cnt, location = bfs()
+                if cnt:
+                    sel.append((-cnt, degree, c, r, [_[:] for _ in grid]))
+                small_grid = ro
             grid = [_[:] for _ in grid_origin]
 
     if not sel:
         break
     sel.sort()
-
     score, degree, cc, rr, new_grid = sel[0]
     grid = new_grid
 
@@ -108,4 +87,4 @@ for t in range(turn):
             for i in range(n - 1, -1, -1):
                 if not grid[i][j]:
                     grid[i][j] = fill.pop(0)
-    print(ans, end = " ")
+    print(ans, end=" ")
