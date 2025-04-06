@@ -57,7 +57,7 @@ for t in range(turn):
     for r in range(3):
         for c in range(3):
             grid_origin = [_[:] for _ in grid]
-            for degree in (90, 360, 90):
+            for degree in range(90, 360, 90):
                 small_grid = [_[c:c + 3] for _ in grid[r:r + 3]]
                 ro = rotation(small_grid)
                 for i in range(3):
