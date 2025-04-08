@@ -27,7 +27,6 @@ def find_two_end():
     for i in range(n):
         for j in range(n):
             if grid[i][j] == 4:
-                grid[i][j] = 0
                 return i, j
 
 
@@ -79,13 +78,13 @@ for tr, tc, td, tv in time_tmp:
         tr = ntr
         tc = ntc
 
-
 def bfs3():
     visited = [[[False] * m for i in range(m)] for i in range(5)]
     visited[three_sh][three_sr][three_sc] = True
-    q = deque([(three_sh, three_sr, three_sc, 0)])
+    q = deque([(three_sh, three_sr, three_sc, 0,[(three_sh,three_sr,three_sc)])])
     while q:
-        h, r, c, cnt = q.popleft()
+        h, r, c, cnt,path = q.popleft()
+        # print(h, r, c, cnt,path)
         if (h, r, c) == (three_eh, three_er, three_ec):
             return cnt
 
@@ -108,8 +107,8 @@ def bfs3():
                     nc = nr
                 elif nc >= m:  # 동
                     nh = 0
-                    nr = 0
                     nc = m - 1 - nr
+                    nr = 0
             elif nh == 0:  # 동: 위남북 갈 수 있음
                 if nr < 0:  # 윗면
                     nh = 4
@@ -152,8 +151,8 @@ def bfs3():
             elif nh == 3:  # 북: 위동서 갈 수 있음
                 if nr < 0:  # 윗면
                     nh = 4
-                    nr = 0
                     nc = m - 1 - nr
+                    nr = 0
                 elif nc < 0:  # 동
                     nh = 0
                     nr = nr
@@ -165,7 +164,7 @@ def bfs3():
             if not (0 <= nr < m and 0 <= nc < m) or visited[nh][nr][nc] or cube[nh][nr][nc]:
                 continue
             visited[nh][nr][nc] = True
-            q.append((nh, nr, nc, cnt + 1))
+            q.append((nh, nr, nc, cnt + 1,path+[(nh,nr,nc)]))
     return -1
 
 
@@ -208,3 +207,4 @@ if ans3 != -1:
         if ans2 != -1:
             ans = ans3 + ans2
 print(ans)
+
