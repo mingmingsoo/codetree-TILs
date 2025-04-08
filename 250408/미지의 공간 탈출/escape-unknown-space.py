@@ -78,12 +78,13 @@ for tr, tc, td, tv in time_tmp:
         tr = ntr
         tc = ntc
 
+
 def bfs3():
     visited = [[[False] * m for i in range(m)] for i in range(5)]
     visited[three_sh][three_sr][three_sc] = True
-    q = deque([(three_sh, three_sr, three_sc, 0,[(three_sh,three_sr,three_sc)])])
+    q = deque([(three_sh, three_sr, three_sc, 0)])
     while q:
-        h, r, c, cnt,path = q.popleft()
+        h, r, c, cnt = q.popleft()
         # print(h, r, c, cnt,path)
         if (h, r, c) == (three_eh, three_er, three_ec):
             return cnt
@@ -164,7 +165,7 @@ def bfs3():
             if not (0 <= nr < m and 0 <= nc < m) or visited[nh][nr][nc] or cube[nh][nr][nc]:
                 continue
             visited[nh][nr][nc] = True
-            q.append((nh, nr, nc, cnt + 1,path+[(nh,nr,nc)]))
+            q.append((nh, nr, nc, cnt + 1))
     return -1
 
 
@@ -207,4 +208,3 @@ if ans3 != -1:
         if ans2 != -1:
             ans = ans3 + ans2
 print(ans)
-
