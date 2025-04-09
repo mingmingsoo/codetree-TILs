@@ -79,14 +79,9 @@ while True:
 
     pull()
 
-    new_arr = []
-    maxi = len(arr[-1])
-    for _ in arr:
-        if len(_) < maxi:
-            _.extend([-1] * (maxi - len(_)))
 
     new_arr = []
-    for j in range(maxi):
+    for j in range(len(arr[0])):
         for i in range(len(arr) - 1, -1, -1):
             if arr[i][j] != -1:
                 new_arr.append(arr[i][j])
