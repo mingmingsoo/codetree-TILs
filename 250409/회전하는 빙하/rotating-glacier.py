@@ -35,9 +35,10 @@ col = [0, 0, 1, -1]
 for l in order_lst:
     m = 2 ** l
     # 잘라
-    for i in range(0, n, m):
-        for j in range(0, n, m):
-            rotation(i, j)
+    if l != 0:
+        for i in range(0, n, m):
+            for j in range(0, n, m):
+                rotation(i, j)
 
     delete = set()
     for i in range(n):
