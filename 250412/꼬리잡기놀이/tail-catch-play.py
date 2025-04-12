@@ -41,17 +41,12 @@ def bfs(r, c):
             nc = c + col[k]
             if not (0 <= nr < n and 0 <= nc < n) or number_map[nr][nc] or not grid[nr][nc]:
                 continue
-            if position == 1 and grid[nr][nc] == 2:
+            number_map[nr][nc] = num
+            if (position == 1 and grid[nr][nc] == 2) or (position != 1 and grid[nr][nc] in (2, 3)):
                 q.append((nr, nc, grid[nr][nc]))
                 team_info[num].append((nr, nc))
-                number_map[nr][nc] = num
-            if position != 1 and grid[nr][nc] in (2, 3):
-                q.append((nr, nc, grid[nr][nc]))
-                team_info[num].append((nr, nc))
-                number_map[nr][nc] = num
             if position != 1 and grid[nr][nc] == 4:
                 q.append((nr, nc, grid[nr][nc]))
-                number_map[nr][nc] = num
 
 
 for i in range(n):
@@ -59,6 +54,19 @@ for i in range(n):
         if grid[i][j] == 1:
             bfs(i, j)
             num += 1
+
+
+def ball(i, j):
+    global score
+    team = number_map[i][j]
+    tdx = team_info[team].index((i, j))
+    score += (tdx + 1) ** 2
+    team_info[team].reverse()
+    hr, hc = team_info[team][0]
+    tr, tc = team_info[team][-1]
+    grid[hr][hc] = 1
+    grid[tr][tc] = 3
+
 
 for t in range(turn):
 
@@ -80,64 +88,30 @@ for t in range(turn):
         grid[nhr][nhc] = 1
         grid[v[-1][0]][v[-1][1]] = 3
 
-
     #     2. 라운드에 따라 공 굴림
     if (t // n) % 4 == 0:
         idx = t % n
-        # print(t, (t // n) % 4, idx)
         for j in range(n):
             if 1 <= grid[idx][j] <= 3:
-                team = number_map[idx][j]
-                tdx = team_info[team].index((idx, j))
-                score += (tdx + 1) ** 2
-                team_info[team].reverse()
-                hr, hc = team_info[team][0]
-                tr, tc = team_info[team][-1]
-                grid[hr][hc] = 1
-                grid[tr][tc] = 3
+                ball(idx, j)
                 break
-
     elif (t // n) % 4 == 1:
         jdx = t % n
-        # print(t, (t // n) % 4, jdx)
         for i in range(n - 1, -1, -1):
             if 1 <= grid[i][jdx] <= 3:
-                team = number_map[i][jdx]
-                tdx = team_info[team].index((i, jdx))
-                score += (tdx + 1) ** 2
-                team_info[team].reverse()
-                hr, hc = team_info[team][0]
-                tr, tc = team_info[team][-1]
-                grid[hr][hc] = 1
-                grid[tr][tc] = 3
+                ball(i, jdx)
                 break
     elif (t // n) % 4 == 2:
         idx = n - 1 - t % n
-        # print(t, (t // n) % 4, idx)
         for j in range(n - 1, -1, -1):
             if 1 <= grid[idx][j] <= 3:
-                team = number_map[idx][j]
-                tdx = team_info[team].index((idx, j))
-                score += (tdx + 1) ** 2
-                team_info[team].reverse()
-                hr, hc = team_info[team][0]
-                tr, tc = team_info[team][-1]
-                grid[hr][hc] = 1
-                grid[tr][tc] = 3
+                ball(idx, j)
                 break
     elif (t // n) % 4 == 3:
         jdx = n - 1 - t % n
-        # print(t, (t // n) % 4, jdx)
         for i in range(n):
             if 1 <= grid[i][jdx] <= 3:
-                team = number_map[i][jdx]
-                tdx = team_info[team].index((i, jdx))
-                score += (tdx + 1) ** 2
-                team_info[team].reverse()
-                hr, hc = team_info[team][0]
-                tr, tc = team_info[team][-1]
-                grid[hr][hc] = 1
-                grid[tr][tc] = 3
+                ball(i, jdx)
                 break
 
 print(score)
