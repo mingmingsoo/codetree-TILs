@@ -4,6 +4,7 @@ n, turn = map(int, input().split())
 color_grid = [list(input()) for i in range(n)]
 energy_grid = [list(map(int, input().split())) for i in range(n)]
 change = {"T": 1, "C": 2, "M": 3}
+group = [0, 1, 1, 1, 2, 2, 2, 3]
 for i in range(n):
     for j in range(n):
         color_grid[i][j] = change[color_grid[i][j]]
@@ -42,27 +43,13 @@ def bfs(r, c):
     return br, bc
 
 
-for t in range(1, turn + 1):
-
+def plus_energy_one():
     for i in range(n):
         for j in range(n):
             energy_grid[i][j] += 1
-    v = [[0] * n for i in range(n)]
-    shoot_grid = [[False] * n for i in range(n)]
-    lst = []
-    for i in range(n):
-        for j in range(n):
-            if not v[i][j]:
-                v[i][j] = 1
-                r, c = bfs(i, j)
-                shoot_grid[r][c] = True
-                if 1 <= color_grid[r][c] <= 3:
-                    lst.append((1, -energy_grid[r][c], (r, c)))
-                elif 4 <= color_grid[r][c] <= 6:
-                    lst.append((2, -energy_grid[r][c], (r, c)))
-                else:
-                    lst.append((3, -energy_grid[r][c], (r, c)))
-    lst.sort()
+
+
+def spread():
     for o, e, lo in lst:
         r, c = lo
         if not shoot_grid[r][c]:
@@ -94,6 +81,27 @@ for t in range(1, turn + 1):
                     tmp = [my_color, color_grid[nqr][nqc]]
                     tmp.sort()
                     color_grid[nqr][nqc] = color_dict[tuple(tmp)]
+
+
+for t in range(1, turn + 1):
+    # 1. 1씩 더해주기
+    plus_energy_one()
+    # 2. 대표자 찾기
+    v = [[0] * n for i in range(n)]
+    shoot_grid = [[False] * n for i in range(n)]
+    lst = []
+    for i in range(n):
+        for j in range(n):
+            if not v[i][j]:
+                v[i][j] = 1
+                r, c = bfs(i, j)
+                shoot_grid[r][c] = True
+                lst.append((group[color_grid[r][c]], -energy_grid[r][c], (r, c)))
+    lst.sort()
+
+    # 3. 전파하기
+    spread()
+    # 4. 점수계산
     score = [0] * 8
     for i in range(n):
         for j in range(n):
